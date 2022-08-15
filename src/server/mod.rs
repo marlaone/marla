@@ -42,6 +42,7 @@ pub fn serve_server(host: &str, port: u16) -> Result<Server> {
             )
             .service(web::resource("/playground").route(web::get().to(graphiql_route)))
     })
+    .workers(num_cpus::get())
     .bind((host, port))?
     .run())
 }
