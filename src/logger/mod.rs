@@ -10,6 +10,6 @@ pub fn setup_logger() {
         .unwrap()
         .get_string("logger.level")
         .unwrap_or("info".to_string());
-    env::set_var("RUST_LOG", format!("actix_web={}", logger_level));
+    env::set_var("RUST_LOG", logger_level);
     Builder::new().parse_default_env().init();
 }
