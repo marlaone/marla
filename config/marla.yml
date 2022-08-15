@@ -1,0 +1,6 @@
+version: "1.0"
+http:
+  host: "localhost"
+  port: 1808
+logger:
+  level: "debug"
