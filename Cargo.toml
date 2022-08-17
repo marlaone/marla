@@ -23,3 +23,6 @@ maplit = "1.0.2"
 toml = "0.5.9"
 serde = "1.0.143"
 num_cpus = "1.13.1"
+graphql_client = "0.11.0"
+reqwest = { version = "0.11.11", features = ["json", "blocking"] }
+derive_more = "0.99.17"

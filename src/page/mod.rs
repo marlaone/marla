@@ -5,6 +5,7 @@ use crate::graphql::context::GQLContext;
 use self::meta::PageMeta;
 
 pub mod meta;
+pub mod queries;
 
 #[derive(Clone, Debug)]
 pub struct Page {

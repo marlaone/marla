@@ -1,0 +1,10 @@
+query PageByPath($path: String!) {
+  page(path:$path) {
+    meta {
+      title
+      description
+      keywords
+    }
+    content
+  }
+}
