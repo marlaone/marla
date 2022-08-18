@@ -2,6 +2,8 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 use chrono::DateTime;
+use glob::glob;
+use log::error;
 use marla_core::config::SETTINGS;
 use marla_markdown::{frontmatter::parse, load_markdown, markdown_to_html};
 
@@ -46,6 +48,40 @@ pub fn path_to_content_path(path: String) -> PathBuf {
     return contents_path.as_path().join(content_path);
 }
 
+pub fn content_path_to_url_path(path: &PathBuf) -> String {
+    let contents_path = SETTINGS
+        .read()
+        .unwrap()
+        .get_string("site.content")
+        .unwrap_or_default();
+
+    let page_path = String::from(path.to_str().unwrap_or_default())
+        .replace(contents_path.as_str(), "")
+        .replace(&contents_path.as_str()[1..], "")
+        .replace(&contents_path.as_str()[2..], "")
+        .replace(".md", "")
+        .replace("index", "");
+
+    let page_url = PathBuf::from("https://marla.one/")
+        .join(page_path)
+        .to_str()
+        .unwrap_or_default()
+        .to_string();
+
+    match url::Url::parse(page_url.as_str()) {
+        Ok(url) => {
+            let mut page_path = url.path().to_string();
+
+            if page_path != "/" && page_path.ends_with("/") {
+                page_path.pop();
+            }
+
+            page_path
+        }
+        Err(_) => "".to_string(),
+    }
+}
+
 pub fn markdown_to_page(path: PathBuf) -> Result<Page> {
     let file_metadata = std::fs::metadata(&path)?;
 
@@ -54,6 +90,7 @@ pub fn markdown_to_page(path: PathBuf) -> Result<Page> {
     let markdown = parse::<PageMeta>(&markdown_content)?;
 
     let page = Page {
+        path: content_path_to_url_path(&path),
         meta: Some(markdown.meta),
         content: markdown_to_html(&markdown.content_markdown)?,
         last_modified_at: DateTime::from(file_metadata.modified()?),
@@ -61,4 +98,28 @@ pub fn markdown_to_page(path: PathBuf) -> Result<Page> {
     };
 
     return Ok(page);
+}
+
+pub fn get_pages(sub_path: Option<String>) -> Result<Vec<Page>> {
+    let mut pages = Vec::new();
+    let mut contents_path = SETTINGS
+        .read()
+        .unwrap()
+        .get_string("site.content")
+        .unwrap_or_default();
+
+    if sub_path.is_some() {
+        contents_path.push_str(sub_path.unwrap().as_str());
+    }
+
+    contents_path.push_str("/**/*.md");
+
+    for content_entry in glob(&contents_path)? {
+        match content_entry {
+            Ok(page_path) => pages.push(markdown_to_page(page_path)?),
+            Err(e) => error!("{:?}", e),
+        }
+    }
+
+    Ok(pages)
 }

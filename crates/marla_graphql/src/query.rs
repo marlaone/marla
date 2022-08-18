@@ -2,7 +2,7 @@ use juniper::{graphql_object, FieldResult};
 
 use marla_core::config::SETTINGS;
 use marla_site::page::{
-    markdown::{markdown_to_page, path_to_content_path},
+    markdown::{get_pages, markdown_to_page, path_to_content_path},
     Page,
 };
 
@@ -25,5 +25,9 @@ impl Query {
 
     fn page(path: String) -> FieldResult<Page> {
         Ok(markdown_to_page(path_to_content_path(path))?)
+    }
+
+    fn pages(sub_path: Option<String>) -> FieldResult<Vec<Page>> {
+        Ok(get_pages(sub_path)?)
     }
 }

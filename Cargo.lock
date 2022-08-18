@@ -1640,14 +1640,17 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "chrono",
+ "glob",
  "graphql_client",
  "juniper",
+ "log",
  "marla_core",
  "marla_markdown",
  "moka",
  "reqwest",
  "serde",
  "tera",
+ "url",
 ]
 
 [[package]]
@@ -3167,6 +3170,12 @@ dependencies = [
 [[package]]
 name = "website-rs"
 version = "0.1.0"
+dependencies = [
+ "marla_core",
+ "marla_graphql",
+ "marla_http",
+ "tokio",
+]
 
 [[package]]
 name = "wepoll-ffi"

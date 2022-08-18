@@ -9,6 +9,7 @@ pub mod queries;
 
 #[derive(Clone, Debug)]
 pub struct Page {
+    pub path: String,
     pub meta: Option<PageMeta>,
     pub content: String,
     pub last_modified_at: DateTime<Utc>,
@@ -17,6 +18,9 @@ pub struct Page {
 
 #[graphql_object]
 impl Page {
+    fn path(&self) -> &str {
+        &self.path
+    }
     fn meta(&self) -> Option<&PageMeta> {
         self.meta.as_ref()
     }
