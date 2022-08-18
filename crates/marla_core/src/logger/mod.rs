@@ -2,14 +2,9 @@ use std::env;
 
 use env_logger::Builder;
 
-use crate::config::SETTINGS;
+use crate::config::logger_level;
 
 pub fn setup_logger() {
-    let logger_level = SETTINGS
-        .read()
-        .unwrap()
-        .get_string("logger.level")
-        .unwrap_or("info".to_string());
-    env::set_var("RUST_LOG", logger_level);
+    env::set_var("RUST_LOG", logger_level());
     Builder::new().parse_default_env().init();
 }

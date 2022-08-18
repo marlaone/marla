@@ -4,7 +4,7 @@ use anyhow::Result;
 use chrono::DateTime;
 use glob::glob;
 use log::error;
-use marla_core::config::SETTINGS;
+use marla_core::config::site_content_path;
 use marla_markdown::{frontmatter::parse, load_markdown, markdown_to_html};
 
 use super::{meta::PageMeta, Page};
@@ -12,13 +12,7 @@ use super::{meta::PageMeta, Page};
 pub fn path_to_content_path(path: String) -> PathBuf {
     let mut content_path = "".to_string();
 
-    let contents_path = PathBuf::from(
-        SETTINGS
-            .read()
-            .unwrap()
-            .get_string("site.content")
-            .unwrap_or_default(),
-    );
+    let contents_path = PathBuf::from(site_content_path());
 
     if path.starts_with("/") {
         content_path.push_str(".");
@@ -49,11 +43,7 @@ pub fn path_to_content_path(path: String) -> PathBuf {
 }
 
 pub fn content_path_to_url_path(path: &PathBuf) -> String {
-    let contents_path = SETTINGS
-        .read()
-        .unwrap()
-        .get_string("site.content")
-        .unwrap_or_default();
+    let contents_path = site_content_path();
 
     let page_path = String::from(path.to_str().unwrap_or_default())
         .replace(contents_path.as_str(), "")
@@ -102,11 +92,7 @@ pub fn markdown_to_page(path: PathBuf) -> Result<Page> {
 
 pub fn get_pages(sub_path: Option<String>) -> Result<Vec<Page>> {
     let mut pages = Vec::new();
-    let mut contents_path = SETTINGS
-        .read()
-        .unwrap()
-        .get_string("site.content")
-        .unwrap_or_default();
+    let mut contents_path = site_content_path();
 
     if sub_path.is_some() {
         contents_path.push_str(sub_path.unwrap().as_str());

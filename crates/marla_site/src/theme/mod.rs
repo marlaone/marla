@@ -1,11 +1,11 @@
 use anyhow::Result;
-use marla_core::config::SETTINGS;
+use marla_core::config::{site_debug, site_theme_path};
 use tera::{Context, Tera};
 
 use crate::page::queries::page_by_path::PageByPathPage;
 
 pub fn get_theme_path() -> Result<String> {
-    let mut theme_path = SETTINGS.read().unwrap().get_string("site.theme")?;
+    let mut theme_path = site_theme_path();
     if !theme_path.ends_with("/") {
         theme_path.push_str("/");
     }
@@ -42,12 +42,7 @@ impl Theme {
         let mut context = Context::new();
         context.insert("page", &page);
 
-        if SETTINGS
-            .read()
-            .unwrap()
-            .get_bool("site.debug")
-            .unwrap_or_default()
-        {
+        if site_debug() {
             self.tera.full_reload()?;
         }
 

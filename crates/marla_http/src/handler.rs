@@ -11,7 +11,7 @@ use actix_web::{
     web, HttpRequest, HttpResponse, Responder,
 };
 use derive_more::{Display, Error};
-use marla_core::config::SETTINGS;
+use marla_core::config::site_output_path;
 use marla_site::{
     page::queries::{page_by_path::Variables, PageClient},
     theme::{get_theme_path, Theme},
@@ -80,11 +80,7 @@ fn serve_static_files(req: &HttpRequest) -> Result<Option<HttpResponse>, PageErr
     let theme_path =
         get_theme_path().map_err(|e| PageError::ServiceFailure { msg: e.to_string() })?;
 
-    let output_path = SETTINGS
-        .read()
-        .unwrap()
-        .get_string("site.output")
-        .unwrap_or_default();
+    let output_path = site_output_path();
     let mut static_pathes = vec![
         PathBuf::from(&theme_path).join("./content"),
         PathBuf::from(&theme_path).join("./static"),
