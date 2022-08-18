@@ -1,8 +1,7 @@
 use graphql_client::{GraphQLQuery, Response};
+use marla_core::config::SETTINGS;
 use reqwest;
 use std::{error::Error, time::Duration};
-
-use crate::graphql::server::graphql_endpoint;
 
 use self::page_by_path::PageByPathPage;
 
@@ -59,4 +58,23 @@ impl PageClient {
             None => Ok(None),
         }
     }
+}
+
+pub fn graphql_endpoint() -> String {
+    let prot = SETTINGS
+        .read()
+        .unwrap()
+        .get_string("graphql.protocol")
+        .unwrap_or("http".to_string());
+    let host = SETTINGS
+        .read()
+        .unwrap()
+        .get_string("graphql.host")
+        .unwrap_or("localhost".to_string());
+    let port = SETTINGS
+        .read()
+        .unwrap()
+        .get::<u16>("graphql.port")
+        .unwrap_or(1808);
+    format!("{}://{}:{}/graphql", prot, host, port)
 }

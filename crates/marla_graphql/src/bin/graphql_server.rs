@@ -1,6 +1,5 @@
-use website_rs::config::SETTINGS;
-use website_rs::graphql::server::serve_graphql_server;
-use website_rs::logger::setup_logger;
+use marla_core::{config::SETTINGS, logger::setup_logger};
+use marla_graphql::server::serve_graphql_server;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {

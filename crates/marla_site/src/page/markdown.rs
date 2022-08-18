@@ -1,18 +1,11 @@
 use std::path::PathBuf;
 
-use ammonia::Builder;
 use anyhow::Result;
 use chrono::DateTime;
-use maplit::hashset;
-use pulldown_cmark::{html, Options, Parser};
+use marla_core::config::SETTINGS;
+use marla_markdown::{frontmatter::parse, load_markdown, markdown_to_html};
 
-use crate::{
-    config::SETTINGS,
-    markdown::frontmatter::parse,
-    page::{meta::PageMeta, Page},
-};
-
-pub mod frontmatter;
+use super::{meta::PageMeta, Page};
 
 pub fn path_to_content_path(path: String) -> PathBuf {
     let mut content_path = "".to_string();
@@ -51,25 +44,6 @@ pub fn path_to_content_path(path: String) -> PathBuf {
     content_path = content_path.replace("..", ".");
 
     return contents_path.as_path().join(content_path);
-}
-
-pub fn markdown_to_html(markdown_input: &str) -> Result<String> {
-    let markdown_options = Options::all();
-    let parser = Parser::new_ext(markdown_input, markdown_options);
-
-    let mut html_output = String::with_capacity(markdown_input.len() * 3 / 2);
-    html::push_html(&mut html_output, parser);
-
-    html_output = Builder::new()
-        .generic_attributes(hashset!["id", "class"])
-        .clean(&html_output)
-        .to_string();
-
-    return Ok(html_output);
-}
-
-pub fn load_markdown(path: &PathBuf) -> Result<String> {
-    return Ok(std::fs::read_to_string(path)?);
 }
 
 pub fn markdown_to_page(path: PathBuf) -> Result<Page> {

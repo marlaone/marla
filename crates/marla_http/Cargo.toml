@@ -1,0 +1,18 @@
+[package]
+name = "marla_http"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+marla_core = { path = "../marla_core", version = "0.1.0" }
+marla_site = { path = "../marla_site", version = "0.1.0" }
+actix-web = "4"
+actix-cors = "0.6.2"
+actix-files = "0.6.2"
+tokio = { version = "1", features = ["full"] }
+derive_more = "0.99.17"
+log = "0.4.17"
+num_cpus = "1.13.1"
+anyhow = "1.0.61"

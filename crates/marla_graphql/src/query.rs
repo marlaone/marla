@@ -1,9 +1,9 @@
 use juniper::{graphql_object, FieldResult};
 
-use crate::{
-    config::SETTINGS,
+use marla_core::config::SETTINGS;
+use marla_site::page::{
     markdown::{markdown_to_page, path_to_content_path},
-    page::Page,
+    Page,
 };
 
 use super::context::GQLContext;

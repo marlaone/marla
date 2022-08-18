@@ -1581,6 +1581,76 @@ dependencies = [
 ]
 
 [[package]]
+name = "marla_core"
+version = "0.1.0"
+dependencies = [
+ "config",
+ "env_logger",
+ "home",
+ "lazy_static",
+]
+
+[[package]]
+name = "marla_graphql"
+version = "0.1.0"
+dependencies = [
+ "actix-cors",
+ "actix-web",
+ "anyhow",
+ "juniper",
+ "juniper_actix",
+ "log",
+ "marla_core",
+ "marla_site",
+ "num_cpus",
+ "tokio",
+]
+
+[[package]]
+name = "marla_http"
+version = "0.1.0"
+dependencies = [
+ "actix-cors",
+ "actix-files",
+ "actix-web",
+ "anyhow",
+ "derive_more",
+ "log",
+ "marla_core",
+ "marla_site",
+ "num_cpus",
+ "tokio",
+]
+
+[[package]]
+name = "marla_markdown"
+version = "0.1.0"
+dependencies = [
+ "ammonia",
+ "anyhow",
+ "maplit",
+ "pulldown-cmark",
+ "serde",
+ "toml",
+]
+
+[[package]]
+name = "marla_site"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "graphql_client",
+ "juniper",
+ "marla_core",
+ "marla_markdown",
+ "moka",
+ "reqwest",
+ "serde",
+ "tera",
+]
+
+[[package]]
 name = "matches"
 version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3097,32 +3167,6 @@ dependencies = [
 [[package]]
 name = "website-rs"
 version = "0.1.0"
-dependencies = [
- "actix-cors",
- "actix-files",
- "actix-web",
- "ammonia",
- "anyhow",
- "chrono",
- "config",
- "derive_more",
- "env_logger",
- "graphql_client",
- "home",
- "juniper",
- "juniper_actix",
- "lazy_static",
- "log",
- "maplit",
- "moka",
- "num_cpus",
- "pulldown-cmark",
- "reqwest",
- "serde",
- "tera",
- "tokio",
- "toml",
-]
 
 [[package]]
 name = "wepoll-ffi"

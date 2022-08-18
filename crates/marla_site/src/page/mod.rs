@@ -1,10 +1,9 @@
 use chrono::{DateTime, Utc};
 use juniper::graphql_object;
 
-use crate::graphql::context::GQLContext;
-
 use self::meta::PageMeta;
 
+pub mod markdown;
 pub mod meta;
 pub mod queries;
 
@@ -16,7 +15,7 @@ pub struct Page {
     pub created_at: DateTime<Utc>,
 }
 
-#[graphql_object(context = GQLContext)]
+#[graphql_object]
 impl Page {
     fn meta(&self) -> Option<&PageMeta> {
         self.meta.as_ref()

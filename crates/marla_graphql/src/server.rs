@@ -10,31 +10,9 @@ use anyhow::Result;
 use log::debug;
 
 use crate::{
-    config::SETTINGS,
-    graphql::{
-        handler::{graphiql_route, graphql_route},
-        schema::schema,
-    },
+    handler::{graphiql_route, graphql_route},
+    schema::schema,
 };
-
-pub fn graphql_endpoint() -> String {
-    let prot = SETTINGS
-        .read()
-        .unwrap()
-        .get_string("graphql.protocol")
-        .unwrap_or("http".to_string());
-    let host = SETTINGS
-        .read()
-        .unwrap()
-        .get_string("graphql.host")
-        .unwrap_or("localhost".to_string());
-    let port = SETTINGS
-        .read()
-        .unwrap()
-        .get::<u16>("graphql.port")
-        .unwrap_or(1808);
-    format!("{}://{}:{}/graphql", prot, host, port)
-}
 
 pub fn serve_graphql_server(host: &str, port: u16) -> Result<Server> {
     debug!("Listening on http://{}:{}", host, port);

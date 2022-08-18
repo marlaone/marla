@@ -11,13 +11,12 @@ use actix_web::{
     web, HttpRequest, HttpResponse, Responder,
 };
 use derive_more::{Display, Error};
-use tokio::sync::Mutex;
-
-use crate::{
-    config::SETTINGS,
-    page::queries::PageClient,
+use marla_core::config::SETTINGS;
+use marla_site::{
+    page::queries::{page_by_path::Variables, PageClient},
     theme::{get_theme_path, Theme},
 };
+use tokio::sync::Mutex;
 
 #[derive(Debug, Display, Error)]
 pub enum PageError {
@@ -120,7 +119,7 @@ pub async fn page(
 
     // graphql api
     let potential_page = page_client
-        .query_page_by_path(crate::page::queries::page_by_path::Variables {
+        .query_page_by_path(Variables {
             path: req.uri().path().to_string(),
         })
         .await

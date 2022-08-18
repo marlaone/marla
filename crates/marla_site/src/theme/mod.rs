@@ -1,7 +1,8 @@
 use anyhow::Result;
+use marla_core::config::SETTINGS;
 use tera::{Context, Tera};
 
-use crate::{config::SETTINGS, page::queries::page_by_path::PageByPathPage};
+use crate::page::queries::page_by_path::PageByPathPage;
 
 pub fn get_theme_path() -> Result<String> {
     let mut theme_path = SETTINGS.read().unwrap().get_string("site.theme")?;

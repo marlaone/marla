@@ -7,9 +7,10 @@ use actix_web::{
 };
 use anyhow::Result;
 use log::debug;
+use marla_site::{page::queries::PageClient, theme::Theme};
 use tokio::sync::Mutex;
 
-use crate::{http::handler::page, page::queries::PageClient, theme::Theme};
+use crate::handler::page;
 
 pub fn serve_http_server(host: &str, port: u16) -> Result<Server> {
     let theme = Theme::new()?;

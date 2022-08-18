@@ -1,6 +1,5 @@
-use website_rs::config::SETTINGS;
-use website_rs::http::server::serve_http_server;
-use website_rs::logger::setup_logger;
+use marla_core::{config::SETTINGS, logger::setup_logger};
+use marla_http::server::serve_http_server;
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
