@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use juniper::graphql_object;
 
 use crate::graphql::context::GQLContext;
@@ -11,6 +12,8 @@ pub mod queries;
 pub struct Page {
     pub meta: Option<PageMeta>,
     pub content: String,
+    pub last_modified_at: DateTime<Utc>,
+    pub created_at: DateTime<Utc>,
 }
 
 #[graphql_object(context = GQLContext)]
@@ -20,5 +23,11 @@ impl Page {
     }
     fn content(&self) -> &str {
         &self.content
+    }
+    fn created_at(&self) -> DateTime<Utc> {
+        self.created_at
+    }
+    fn last_modified_at(&self) -> DateTime<Utc> {
+        self.last_modified_at
     }
 }

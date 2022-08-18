@@ -8,4 +8,6 @@ keywords = ["some", "key", "words"]
 
 <div id="hello" class="ok-lets-go">Some HTML</div>
 
+hello
+
 <script src="https://highjack.me/daddy.js"></script>

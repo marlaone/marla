@@ -1,4 +1,3 @@
-pub mod client;
 pub mod context;
 pub mod handler;
 pub mod query;

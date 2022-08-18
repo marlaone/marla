@@ -3,17 +3,23 @@ use actix_web::{
     dev::Server,
     http::header,
     middleware::{Compress, Logger, NormalizePath},
-    App, HttpServer,
+    web, App, HttpServer,
 };
 use anyhow::Result;
 use log::debug;
+use tokio::sync::Mutex;
 
-use crate::http::handler::index;
+use crate::{http::handler::page, page::queries::PageClient, theme::Theme};
 
 pub fn serve_http_server(host: &str, port: u16) -> Result<Server> {
+    let theme = Theme::new()?;
+    let page_client = PageClient::new();
+
     debug!("Listening on http://{}:{}", host, port);
-    Ok(HttpServer::new(|| {
+    Ok(HttpServer::new(move || {
         App::new()
+            .app_data(web::Data::new(Mutex::new(theme.clone())))
+            .app_data(web::Data::new(page_client.clone()))
             .wrap(NormalizePath::trim())
             .wrap(Logger::default())
             .wrap(Compress::default())
@@ -30,7 +36,7 @@ pub fn serve_http_server(host: &str, port: u16) -> Result<Server> {
                     .supports_credentials()
                     .max_age(3600),
             )
-            .service(index)
+            .service(page)
     })
     .workers(num_cpus::get())
     .bind((host, port))?

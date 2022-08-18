@@ -2,6 +2,7 @@ use std::path::PathBuf;
 
 use ammonia::Builder;
 use anyhow::Result;
+use chrono::DateTime;
 use maplit::hashset;
 use pulldown_cmark::{html, Options, Parser};
 
@@ -20,7 +21,7 @@ pub fn path_to_content_path(path: String) -> PathBuf {
         SETTINGS
             .read()
             .unwrap()
-            .get_string("app.contents")
+            .get_string("site.content")
             .unwrap_or_default(),
     );
 
@@ -72,6 +73,8 @@ pub fn load_markdown(path: &PathBuf) -> Result<String> {
 }
 
 pub fn markdown_to_page(path: PathBuf) -> Result<Page> {
+    let file_metadata = std::fs::metadata(&path)?;
+
     let markdown_content = load_markdown(&path)?;
 
     let markdown = parse::<PageMeta>(&markdown_content)?;
@@ -79,6 +82,8 @@ pub fn markdown_to_page(path: PathBuf) -> Result<Page> {
     let page = Page {
         meta: Some(markdown.meta),
         content: markdown_to_html(&markdown.content_markdown)?,
+        last_modified_at: DateTime::from(file_metadata.modified()?),
+        created_at: DateTime::from(file_metadata.created()?),
     };
 
     return Ok(page);
