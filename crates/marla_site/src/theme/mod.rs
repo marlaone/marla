@@ -1,7 +1,9 @@
+use std::collections::HashMap;
+
 use anyhow::{Context, Result};
 use glob::glob;
 use marla_core::config::{site_content_path, site_theme_path};
-use tera::{Context as TeraContext, Tera};
+use tera::{from_value, to_value, Context as TeraContext, Result as TeraResult, Tera, Value};
 
 use crate::{page::queries::page_by_path::PageByPathPage, utils::clean_path};
 
@@ -11,6 +13,111 @@ pub fn get_theme_path() -> Result<String> {
         theme_path.push_str("/");
     }
     return Ok(theme_path);
+}
+
+pub fn apply_tera_functions(theme_tera: &mut Tera) {
+    theme_tera.register_function(
+        "has_meta_title",
+        Box::new(move |args: &HashMap<String, Value>| -> TeraResult<Value> {
+            match args.get("page") {
+                Some(value) => match from_value::<PageByPathPage>(value.clone()) {
+                    Ok(v) => match v.meta {
+                        Some(meta) => match meta.title {
+                            Some(_) => Ok(to_value(true).unwrap()),
+                            None => Ok(to_value(false).unwrap()),
+                        },
+                        None => Ok(to_value(false).unwrap()),
+                    },
+                    Err(e) => Err(format!("invalid page argument = {}", e.to_string()).into()),
+                },
+                None => Err("missing page argument".into()),
+            }
+        }),
+    );
+
+    theme_tera.register_function(
+        "meta_title",
+        Box::new(move |args: &HashMap<String, Value>| -> TeraResult<Value> {
+            match args.get("page") {
+                Some(value) => match from_value::<PageByPathPage>(value.clone()) {
+                    Ok(v) => {
+                        Ok(to_value(v.meta.unwrap_or_default().title.unwrap_or_default()).unwrap())
+                    }
+                    Err(e) => Err(format!("invalid page argument = {}", e.to_string()).into()),
+                },
+                None => Err("missing page argument".into()),
+            }
+        }),
+    );
+
+    theme_tera.register_function(
+        "has_meta_description",
+        Box::new(move |args: &HashMap<String, Value>| -> TeraResult<Value> {
+            match args.get("page") {
+                Some(value) => match from_value::<PageByPathPage>(value.clone()) {
+                    Ok(v) => match v.meta {
+                        Some(meta) => match meta.description {
+                            Some(_) => Ok(to_value(true).unwrap()),
+                            None => Ok(to_value(false).unwrap()),
+                        },
+                        None => Ok(to_value(false).unwrap()),
+                    },
+                    Err(e) => Err(format!("invalid page argument = {}", e.to_string()).into()),
+                },
+                None => Err("missing page argument".into()),
+            }
+        }),
+    );
+
+    theme_tera.register_function(
+        "meta_description",
+        Box::new(move |args: &HashMap<String, Value>| -> TeraResult<Value> {
+            match args.get("page") {
+                Some(value) => match from_value::<PageByPathPage>(value.clone()) {
+                    Ok(v) => Ok(to_value(
+                        v.meta.unwrap_or_default().description.unwrap_or_default(),
+                    )
+                    .unwrap()),
+                    Err(e) => Err(format!("invalid page argument = {}", e.to_string()).into()),
+                },
+                None => Err("missing page argument".into()),
+            }
+        }),
+    );
+
+    theme_tera.register_function(
+        "has_meta_keywords",
+        Box::new(move |args: &HashMap<String, Value>| -> TeraResult<Value> {
+            match args.get("page") {
+                Some(value) => match from_value::<PageByPathPage>(value.clone()) {
+                    Ok(v) => match v.meta {
+                        Some(meta) => match meta.keywords {
+                            Some(_) => Ok(to_value(true).unwrap()),
+                            None => Ok(to_value(false).unwrap()),
+                        },
+                        None => Ok(to_value(false).unwrap()),
+                    },
+                    Err(e) => Err(format!("invalid page argument = {}", e.to_string()).into()),
+                },
+                None => Err("missing page argument".into()),
+            }
+        }),
+    );
+
+    theme_tera.register_function(
+        "meta_keywords",
+        Box::new(move |args: &HashMap<String, Value>| -> TeraResult<Value> {
+            match args.get("page") {
+                Some(value) => match from_value::<PageByPathPage>(value.clone()) {
+                    Ok(v) => Ok(
+                        to_value(v.meta.unwrap_or_default().keywords.unwrap_or_default()).unwrap(),
+                    ),
+                    Err(e) => Err(format!("invalid page argument = {}", e.to_string()).into()),
+                },
+                None => Err("missing page argument".into()),
+            }
+        }),
+    );
 }
 
 pub fn get_theme_templates() -> Result<Tera> {
@@ -33,6 +140,8 @@ pub fn get_theme_templates() -> Result<Tera> {
         };
     }
 
+    apply_tera_functions(&mut theme_tera);
+
     return Ok(theme_tera);
 }
 
@@ -49,7 +158,8 @@ impl Theme {
     }
 
     pub fn render_template(&mut self, template: &str) -> Result<String> {
-        let context = TeraContext::new();
+        let mut context = TeraContext::new();
+        context.insert("page", &PageByPathPage::default());
 
         Ok(self.tera.render(template, &context)?)
     }

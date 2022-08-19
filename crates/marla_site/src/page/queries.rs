@@ -9,7 +9,7 @@ use self::page_by_path::PageByPathPage;
 #[graphql(
     schema_path = "graph/schema.graphql",
     query_path = "graph/queries/page.graphql",
-    response_derives = "Debug,serde::Serialize,Clone"
+    response_derives = "Debug,serde::Serialize,Clone,Default"
 )]
 pub struct PageByPath;
 
