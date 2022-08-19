@@ -8,7 +8,7 @@ export default defineConfig({
   },
   build: {
     minify: 'esbuild',
-    outDir: '../themes/marla/static/marla-elements',
+    outDir: '../static/marla-elements',
     emptyOutDir: true,
     lib: {
       name: "marlaone",
