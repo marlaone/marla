@@ -1,6 +1,7 @@
 version: "3.9"
 services:
   website:
+    restart: always
     build:
       context: ./
       dockerfile: ./build/docker/website/Dockerfile
