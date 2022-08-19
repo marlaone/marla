@@ -55,7 +55,8 @@ pub async fn sitemap_route(
             .loc(
                 req.url_for("page", &[&page.path[1..]])
                     .map_err(|e| SitemapError::EntryError { msg: e.to_string() })?
-                    .as_str(),
+                    .as_str()
+                    .replace("http:", "https:"),
             )
             .changefreq(sitemap::structs::ChangeFreq::Monthly)
             .priority(0.5)
