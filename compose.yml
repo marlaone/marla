@@ -6,7 +6,6 @@ services:
       context: ./
       dockerfile: ./build/docker/website/Dockerfile
     ports:
-      - "1808:1808"
       - "1809:1809"
     volumes:
       - ./site:/app/site
