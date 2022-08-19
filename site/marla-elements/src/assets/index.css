@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: 'Monoglyceride';
+  src: url('./fonts/monoglyceride/monodb_.ttf')  format('truetype'); /* Legacy iOS */
+}
+
+.font-monoglyceride {
+  font-family: 'Monoglyceride', sans-serif;
+}
+
+.bg-primary-gradient {
+  background: rgb(247,166,20);
+  background: linear-gradient(90deg, rgba(247,166,20,1) 0%, rgba(231,35,128,0.9) 100%);
+}

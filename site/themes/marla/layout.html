@@ -1,18 +1,118 @@
 <!DOCTYPE html>
 <html lang="de" data-theme="marlaone">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     {% block head %}
     <title>{% block title %}{% endblock title %} - Marla.ONE</title>
     {% endblock head %}
     <link rel="stylesheet" href="/marla-elements/style.css">
+    <script type="module">
+      import flamethrower from '/assets/js/flamethrower.js'
+
+      flamethrower({ prefetch: 'visible', log: false, pageTransitions: true, });
+    </script>
 </head>
-<body>
-    <div id="content">{% block content %}{% endblock content %}</div>
-    <div id="footer">
-        {% block footer %}
-        &copy; Copyright 2008 by <a href="http://domain.invalid/">you</a>.
-        {% endblock footer %}
-    </div>
-    <script src="/marla-elements/marla-elements.umd.js"></script>
+<body class="bg-base-200">
+  <div>
+    <nav class="navbar relative bg-white z-50 h-20">
+      <div class="navbar-start">
+        <!--<div class="dropdown">
+          <label tabindex="0" class="btn btn-ghost lg:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+          </label>
+          <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
+            <li><a>Item 1</a></li>
+            <li tabindex="0">
+              <a class="justify-between">
+                Parent
+                <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/></svg>
+              </a>
+              <ul class="bg-base-100 p-2">
+                <li><a>Submenu 1</a></li>
+                <li><a>Submenu 2</a></li>
+              </ul>
+            </li>
+            <li><a>Item 3</a></li>
+          </ul>
+        </div>--> 
+        <a href="/" class="inline-flex align-middle justify-center items-center cursor-pointer p-4 font-monoglyceride normal-case text-xl">
+          <img src="/assets/images/logo.svg" class="h-12 mr-4" alt="logo" />
+          Marla.ONE
+        </a>
+      </div>
+      <!--<div class="navbar-center hidden lg:flex">
+        <ul class="menu menu-horizontal p-0">
+          <li><a>Item 1</a></li>
+          <li tabindex="0">
+            <a>
+              Parent
+              <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/></svg>
+            </a>
+            <ul class="  p-2">
+              <li><a>Submenu 1</a></li>
+              <li><a>Submenu 2</a></li>
+            </ul>
+          </li>
+          <li><a>Item 3</a></li>
+        </ul>
+      </div>-->
+      <!--<div class="navbar-end">
+        <a class="btn">Get started</a>
+      </div>-->
+    </nav>
+    <header>
+      <section class="hero" style="background-image: url(/assets/images/SM-03.jpg);">
+        <div class="hero-overlay bg-opacity-20"></div>
+        <div class="hero-content text-center text-neutral-content flex-wrap">
+          <div class="max-w-md mb-24 mt-16">
+            <h1 class="mb-8 text-5xl font-bold">Website in der Entstehung</h1>
+            <p class="mb-8 text-xl">Wir sind die Hündin Marla und der Programmierer Jan-Philipp.</p>
+            <a href="https://www.twitch.tv/marla_dev" target="_blank" class="btn btn-primary">Folge der Entwicklung auf Twitch</a>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 mb-16 w-full">
+            <a href="https://www.instagram.com/marla.one/" target="_blank" class="btn btn-secondary">
+              <i class="fa-brands fa-instagram text-2xl mr-4"></i>
+              Instagram
+            </a>
+            <a href="https://www.youtube.com/channel/UCVPdKKb08DTGFxFfO5SOPzA" target="_blank" class="btn bg-red-600 border-red-600 hover:bg-red-700 hover:border-red-700">
+              <i class="fa-brands fa-youtube text-2xl mr-4"></i>
+              YouTube
+            </a>
+            <a href="https://www.twitch.tv/marla_dev" target="_blank" class="btn bg-purple-600 border-purple-600 hover:bg-purple-700 hover:border-purple-700">
+              <i class="fa-brands fa-twitch text-2xl mr-4"></i>
+              Twitch
+            </a>
+          </div>
+        </div>
+      </section>
+    </header>
+    <main class="justify-center flex px-4 md:px-16 py-8 -mt-16">
+        <div class="card w-full md:w-2/3 bg-base-100 shadow-xl">
+            <div class="card-body max-w-none prose">
+              {% block content %}{% endblock content %}
+            </div>
+        </div>
+    </main>
+</div>
+<footer class="footer p-10 bg-primary text-base-content">
+  <div class="gap-4">
+    <img src="/assets/images/logo_text_white.svg" class="w-36" alt="logo" />
+    <p>&copy; seit 2022</p>
+  </div> 
+  <div class="gap-4">
+    <span class="footer-title">Links</span> 
+    <a href="https://www.instagram.com/marla.one/" target="_blank" class="link link-hover">Instagram</a> 
+    <a href="https://www.youtube.com/channel/UCVPdKKb08DTGFxFfO5SOPzA" target="_blank" class="link link-hover">YouTube</a> 
+    <a href="https://www.twitch.tv/marla_dev" target="_blank" class="link link-hover">Twitch</a> 
+    <a href="https://github.com/marlaone/website" class="link link-hover" target="_blank">GitHub</a>
+  </div> 
+  <div class="gap-4">
+    <span class="footer-title">Rechtliches</span> 
+    <a href="/impressum" class="link link-hover">Impressum</a> 
+    <a href="/datenschutz" class="link link-hover">Datenschutz</a> 
+  </div>
+</footer>
+<script src="/marla-elements/marla-elements.umd.js"></script>
 </body>
 </html>
