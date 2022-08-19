@@ -16,11 +16,6 @@ pub fn get_theme_templates() -> Result<Tera> {
     let mut theme_path = get_theme_path()?;
     theme_path.push_str("**/*.html");
 
-    println!(
-        "theme_path = {}",
-        std::env::current_dir()?.join(&theme_path).to_str().unwrap()
-    );
-
     return Ok(Tera::new(
         std::env::current_dir()?.join(theme_path).to_str().unwrap(),
     )?);
