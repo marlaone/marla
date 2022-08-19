@@ -1581,6 +1581,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "marla"
+version = "0.1.0"
+dependencies = [
+ "marla_core",
+ "marla_graphql",
+ "marla_http",
+ "tokio",
+]
+
+[[package]]
 name = "marla_core"
 version = "0.1.0"
 dependencies = [
@@ -3172,16 +3182,6 @@ checksum = "ed055ab27f941423197eb86b2035720b1a3ce40504df082cac2ecc6ed73335a1"
 dependencies = [
  "js-sys",
  "wasm-bindgen",
-]
-
-[[package]]
-name = "website-rs"
-version = "0.1.0"
-dependencies = [
- "marla_core",
- "marla_graphql",
- "marla_http",
- "tokio",
 ]
 
 [[package]]

@@ -7,7 +7,7 @@ use actix_web::{
     App, HttpServer,
 };
 use anyhow::Result;
-use log::debug;
+use log::info;
 
 use crate::{
     handler::{graphiql_route, graphql_route},
@@ -15,7 +15,7 @@ use crate::{
 };
 
 pub fn serve_graphql_server(host: &str, port: u16) -> Result<Server> {
-    debug!("Listening on http://{}:{}", host, port);
+    info!("Listening on http://{}:{}", host, port);
     Ok(HttpServer::new(|| {
         App::new()
             .app_data(Data::new(schema()))

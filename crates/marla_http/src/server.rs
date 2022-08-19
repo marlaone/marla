@@ -6,7 +6,7 @@ use actix_web::{
     web, App, HttpServer,
 };
 use anyhow::Result;
-use log::debug;
+use log::info;
 use marla_site::{page::queries::PageClient, theme::Theme};
 use tokio::sync::Mutex;
 
@@ -16,7 +16,7 @@ pub fn serve_http_server(host: &str, port: u16) -> Result<Server> {
     let theme = Theme::new()?;
     let page_client = PageClient::new();
 
-    debug!("Listening on http://{}:{}", host, port);
+    info!("Listening on http://{}:{}", host, port);
     Ok(HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(Mutex::new(theme.clone())))
