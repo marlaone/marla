@@ -17,7 +17,7 @@ impl Query {
     }
 
     fn page(path: String) -> FieldResult<Page> {
-        Ok(markdown_to_page(path_to_content_path(path))?)
+        Ok(markdown_to_page(path_to_content_path(path, None))?)
     }
 
     fn pages(sub_path: Option<String>) -> FieldResult<Vec<Page>> {

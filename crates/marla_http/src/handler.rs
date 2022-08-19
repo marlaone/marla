@@ -13,7 +13,10 @@ use actix_web::{
 use derive_more::{Display, Error};
 use marla_core::config::site_output_path;
 use marla_site::{
-    page::queries::{page_by_path::Variables, PageClient},
+    page::{
+        markdown::path_to_content_path,
+        queries::{page_by_path::Variables, PageClient},
+    },
     theme::{get_theme_path, Theme},
 };
 use tokio::sync::Mutex;
@@ -102,6 +105,30 @@ fn serve_static_files(req: &HttpRequest) -> Result<Option<HttpResponse>, PageErr
     Ok(None)
 }
 
+async fn serve_html_template(
+    theme: web::Data<Mutex<Theme>>,
+    req: &HttpRequest,
+) -> Result<Option<HttpResponse>, PageError> {
+    let content_path =
+        path_to_content_path(req.uri().path().to_string(), Some(".html".to_string()));
+
+    return Ok(if content_path.exists() {
+        Some(
+            HttpResponse::build(StatusCode::OK)
+                .insert_header(ContentType::html())
+                .body(
+                    theme
+                        .lock()
+                        .await
+                        .render_template(content_path.to_str().unwrap_or_default())
+                        .map_err(|e| PageError::RenderError { msg: e.to_string() })?,
+                ),
+        )
+    } else {
+        None
+    });
+}
+
 #[get("/{path:.*}")]
 pub async fn page(
     req: HttpRequest,
@@ -109,6 +136,11 @@ pub async fn page(
     page_client: web::Data<PageClient>,
 ) -> Result<impl Responder, PageError> {
     match serve_static_files(&req)? {
+        Some(res) => return Ok(res),
+        None => (),
+    }
+
+    match serve_html_template(theme.clone(), &req).await? {
         Some(res) => return Ok(res),
         None => (),
     }

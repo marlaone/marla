@@ -7,9 +7,16 @@ use log::error;
 use marla_core::config::site_content_path;
 use marla_markdown::{frontmatter::parse, load_markdown, markdown_to_html};
 
+use crate::utils::clean_path;
+
 use super::{meta::PageMeta, Page};
 
-pub fn path_to_content_path(path: String) -> PathBuf {
+pub fn path_to_content_path(path: String, ext: Option<String>) -> PathBuf {
+    let content_ext = match ext {
+        Some(type_name) => type_name,
+        None => ".md".to_string(),
+    };
+
     let mut content_path = "".to_string();
 
     let contents_path = PathBuf::from(site_content_path());
@@ -27,19 +34,19 @@ pub fn path_to_content_path(path: String) -> PathBuf {
                 if !content_path.ends_with("/") {
                     content_path.push_str("/");
                 }
-                content_path.push_str("index.md");
+                content_path.push_str(("index".to_owned() + content_ext.as_str()).as_str());
             }
         }
         Err(_) => (),
     }
 
-    if !content_path.ends_with(".md") {
-        content_path.push_str(".md");
+    if !content_path.ends_with(&content_ext) {
+        content_path.push_str(&content_ext);
     }
 
     content_path = content_path.replace("..", ".");
 
-    return contents_path.as_path().join(content_path);
+    return clean_path(&contents_path.as_path().join(content_path));
 }
 
 pub fn content_path_to_url_path(path: &PathBuf) -> String {
@@ -50,6 +57,7 @@ pub fn content_path_to_url_path(path: &PathBuf) -> String {
         .replace(&contents_path.as_str()[1..], "")
         .replace(&contents_path.as_str()[2..], "")
         .replace(".md", "")
+        .replace(".html", "")
         .replace("index", "");
 
     let page_url = PathBuf::from("https://marla.one/")
@@ -98,7 +106,7 @@ pub fn get_pages(sub_path: Option<String>) -> Result<Vec<Page>> {
         contents_path.push_str(sub_path.unwrap().as_str());
     }
 
-    contents_path.push_str("/**/*.md");
+    contents_path.push_str("/**/*.{md,html}");
 
     for content_entry in glob(&contents_path)? {
         match content_entry {

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de" data-theme="marlaone">
 <head>
     {% block head %}
     <title>{% block title %}{% endblock title %} - Marla.ONE</title>
     {% endblock head %}
+    <link rel="stylesheet" href="/marla-elements/style.css">
 </head>
 <body>
     <div id="content">{% block content %}{% endblock content %}</div>
@@ -12,5 +13,6 @@
         &copy; Copyright 2008 by <a href="http://domain.invalid/">you</a>.
         {% endblock footer %}
     </div>
+    <script src="/marla-elements/marla-elements.umd.js"></script>
 </body>
 </html>

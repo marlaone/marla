@@ -7,6 +7,13 @@ export default defineConfig({
     port: 3000,
   },
   build: {
-    target: 'esnext',
+    minify: 'esbuild',
+    outDir: '../themes/marla/static/marla-elements',
+    emptyOutDir: true,
+    lib: {
+      name: "marlaone",
+      entry: 'src/index.ts',
+      fileName: "marla-elements"
+    },
   },
 });
