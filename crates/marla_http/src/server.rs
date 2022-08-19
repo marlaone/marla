@@ -10,7 +10,7 @@ use log::info;
 use marla_site::{page::queries::PageClient, theme::Theme};
 use tokio::sync::Mutex;
 
-use crate::handler::page;
+use crate::{handler::page, sitemap::sitemap_route};
 
 pub fn serve_http_server(host: &str, port: u16) -> Result<Server> {
     let theme = Theme::new()?;
@@ -37,6 +37,7 @@ pub fn serve_http_server(host: &str, port: u16) -> Result<Server> {
                     .supports_credentials()
                     .max_age(3600),
             )
+            .service(sitemap_route)
             .service(page)
     })
     .workers(num_cpus::get())

@@ -1,9 +1,12 @@
+use chrono::{DateTime, Utc};
 use graphql_client::{GraphQLQuery, Response};
 use marla_core::config::{graphql_host, graphql_port, graphql_protocol};
 use reqwest;
 use std::{error::Error, time::Duration};
 
-use self::page_by_path::PageByPathPage;
+use self::{all_pages::AllPagesPages, page_by_path::PageByPathPage};
+
+type DateTimeUtc = DateTime<Utc>;
 
 #[derive(GraphQLQuery)]
 #[graphql(
@@ -12,6 +15,14 @@ use self::page_by_path::PageByPathPage;
     response_derives = "Debug,serde::Serialize,Clone,Default"
 )]
 pub struct PageByPath;
+
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "graph/schema.graphql",
+    query_path = "graph/queries/pages.graphql",
+    response_derives = "Debug,serde::Serialize,Clone,Default"
+)]
+pub struct AllPages;
 
 #[derive(Debug, Clone)]
 pub struct PageClient {
@@ -29,10 +40,31 @@ impl PageClient {
         }
     }
 
+    pub async fn query_pages(
+        &self,
+        sub_path: Option<String>,
+    ) -> Result<Option<Vec<AllPagesPages>>, Box<dyn Error>> {
+        let request_body = AllPages::build_query(all_pages::Variables { sub_path });
+
+        let client = reqwest::Client::new();
+        let res = client
+            .post(graphql_endpoint())
+            .json(&request_body)
+            .send()
+            .await?;
+        let response_body: Response<all_pages::ResponseData> = res.json().await?;
+
+        match response_body.data {
+            Some(data) => Ok(Some(data.pages)),
+            None => Ok(None),
+        }
+    }
+
     pub async fn query_page_by_path(
         &self,
-        variables: page_by_path::Variables,
+        path: String,
     ) -> Result<Option<PageByPathPage>, Box<dyn Error>> {
+        let variables = page_by_path::Variables { path };
         let cache_key = variables.path.clone();
         let cached_page = self.cache.get(&cache_key);
         if cached_page.is_some() {

@@ -13,10 +13,7 @@ use actix_web::{
 use derive_more::{Display, Error};
 use marla_core::config::site_output_path;
 use marla_site::{
-    page::{
-        markdown::path_to_content_path,
-        queries::{page_by_path::Variables, PageClient},
-    },
+    page::{markdown::path_to_content_path, queries::PageClient},
     theme::{get_theme_path, Theme},
 };
 use tokio::sync::Mutex;
@@ -129,7 +126,7 @@ async fn serve_html_template(
     });
 }
 
-#[get("/{path:.*}")]
+#[get("/{path:.*}", name = "page")]
 pub async fn page(
     req: HttpRequest,
     theme: web::Data<Mutex<Theme>>,
@@ -147,9 +144,7 @@ pub async fn page(
 
     // graphql api
     let potential_page = page_client
-        .query_page_by_path(Variables {
-            path: req.uri().path().to_string(),
-        })
+        .query_page_by_path(req.uri().path().to_string())
         .await
         .map_err(|e| PageError::QueryError { msg: e.to_string() })?;
 

@@ -32,9 +32,15 @@ directive @connection(
   filter: [String!]
 ) on FIELD
 
+"""DateTime"""
+scalar DateTimeUtc
+
 type Page {
+  path: String!
   meta: PageMeta
   content: String!
+  createdAt: DateTimeUtc!
+  lastModifiedAt: DateTimeUtc!
 }
 
 type PageMeta {
@@ -46,4 +52,5 @@ type PageMeta {
 type Query {
   apiVersion: String!
   page(path: String!): Page!
+  pages(subPath: String): [Page!]!
 }

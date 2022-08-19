@@ -100,20 +100,26 @@ pub fn markdown_to_page(path: PathBuf) -> Result<Page> {
 
 pub fn get_pages(sub_path: Option<String>) -> Result<Vec<Page>> {
     let mut pages = Vec::new();
-    let mut contents_path = site_content_path();
 
-    if sub_path.is_some() {
-        contents_path.push_str(sub_path.unwrap().as_str());
-    }
+    for &ext in ["md", "html"].iter() {
+        let mut contents_path = site_content_path();
 
-    contents_path.push_str("/**/*.{md,html}");
+        if sub_path.is_some() {
+            contents_path.push_str(sub_path.as_ref().unwrap().as_str());
+        }
 
-    for content_entry in glob(&contents_path)? {
-        match content_entry {
-            Ok(page_path) => pages.push(markdown_to_page(page_path)?),
-            Err(e) => error!("{:?}", e),
+        contents_path.push_str("/**/*.");
+        contents_path.push_str(ext);
+
+        for content_entry in glob(&contents_path)? {
+            match content_entry {
+                Ok(page_path) => pages.push(markdown_to_page(page_path)?),
+                Err(e) => error!("{:?}", e),
+            }
         }
     }
+
+    pages.sort_by(|a, b| a.path.partial_cmp(&b.path).unwrap());
 
     Ok(pages)
 }
