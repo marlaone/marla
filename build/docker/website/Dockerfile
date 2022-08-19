@@ -16,7 +16,6 @@ COPY ./ ./
 RUN rm -f ./target/release/deps/marla_*
 RUN cargo build --release
 
-EXPOSE 1808
 EXPOSE 1809
 
 ENTRYPOINT ["/app/target/release/website"]
