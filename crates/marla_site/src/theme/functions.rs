@@ -3,20 +3,12 @@ use std::collections::HashMap;
 use serde_json::{from_value, to_value};
 use tera::{Result as TeraResult, Tera, Value};
 
-use crate::page::queries::{all_pages::AllPagesPages, page_by_path::PageByPathPage};
+use crate::page::Page;
 
-fn get_page_from_args(args: &HashMap<String, Value>) -> Option<PageByPathPage> {
+fn get_page_from_args(args: &HashMap<String, Value>) -> Option<Page> {
     match args.get("page") {
-        Some(value) => match from_value::<PageByPathPage>(value.clone()) {
+        Some(value) => match from_value::<Page>(value.clone()) {
             Ok(v) => return Some(v),
-            Err(_) => {}
-        },
-        None => {}
-    };
-
-    match args.get("page") {
-        Some(value) => match from_value::<AllPagesPages>(value.clone()) {
-            Ok(v) => return Some(PageByPathPage::from(v)),
             Err(_) => {}
         },
         None => {}
@@ -116,7 +108,7 @@ pub fn apply_tera_functions(theme_tera: &mut Tera) {
             let page = get_page_from_args(args);
 
             let pages = match args.get("pages") {
-                Some(value) => match from_value::<Vec<AllPagesPages>>(value.clone()) {
+                Some(value) => match from_value::<Vec<Page>>(value.clone()) {
                     Ok(v) => Some(v),
                     Err(_) => None,
                 },
@@ -124,7 +116,11 @@ pub fn apply_tera_functions(theme_tera: &mut Tera) {
             };
 
             if !page.is_some() || !pages.is_some() {
-                return Ok(to_value(Vec::<&AllPagesPages>::new())?);
+                return Ok(to_value(Vec::<&Page>::new())?);
+            }
+
+            if page.as_ref().unwrap().path == "/" {
+                return Ok(to_value(Vec::<&Page>::new())?);
             }
 
             return Ok(to_value(
@@ -135,8 +131,32 @@ pub fn apply_tera_functions(theme_tera: &mut Tera) {
                         p.path != page.as_ref().unwrap().path
                             && p.path.starts_with(&page.as_ref().unwrap().path)
                     })
-                    .collect::<Vec<&AllPagesPages>>(),
+                    .collect::<Vec<&Page>>(),
             )?);
         }),
     );
+
+    theme_tera.register_filter("in_navigation", in_navigation);
+}
+
+pub fn in_navigation(value: &Value, _: &HashMap<String, Value>) -> TeraResult<Value> {
+    let pages = from_value::<Vec<Page>>(value.clone())?;
+
+    Ok(to_value(
+        pages
+            .iter()
+            .filter(|p| {
+                let in_navigation_entry = p.params.get("in_navigation");
+                return if let Some(in_navigation) = in_navigation_entry {
+                    if in_navigation.is_bool() && in_navigation.as_bool().unwrap() {
+                        true
+                    } else {
+                        false
+                    }
+                } else {
+                    false
+                };
+            })
+            .collect::<Vec<&Page>>(),
+    )?)
 }

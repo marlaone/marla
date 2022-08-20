@@ -13,7 +13,7 @@ use actix_web::{
 use derive_more::{Display, Error};
 use marla_core::config::site_output_path;
 use marla_site::{
-    page::{markdown::path_to_content_path, queries::PageClient},
+    page::markdown::path_to_content_path,
     site::Site,
     theme::{get_theme_path, Theme},
 };
@@ -133,14 +133,13 @@ async fn serve_html_template(
 pub async fn page(
     req: HttpRequest,
     theme: web::Data<Mutex<Theme>>,
-    page_client: web::Data<PageClient>,
 ) -> Result<impl Responder, PageError> {
     match serve_static_files(&req)? {
         Some(res) => return Ok(res),
         None => (),
     }
 
-    let site = Site::from_content_path(req.uri().path().to_string(), &page_client)
+    let site = Site::from_content_path(req.uri().path().to_string())
         .await
         .map_err(|e| PageError::SiteError { msg: e.to_string() })?;
 

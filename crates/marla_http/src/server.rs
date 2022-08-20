@@ -7,20 +7,18 @@ use actix_web::{
 };
 use anyhow::Result;
 use log::info;
-use marla_site::{page::queries::PageClient, theme::Theme};
+use marla_site::theme::Theme;
 use tokio::sync::Mutex;
 
 use crate::{handler::page, sitemap::sitemap_route};
 
 pub fn serve_http_server(host: &str, port: u16) -> Result<Server> {
     let theme = Theme::new()?;
-    let page_client = PageClient::new();
 
     info!("Listening on http://{}:{}", host, port);
     Ok(HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(Mutex::new(theme.clone())))
-            .app_data(web::Data::new(page_client.clone()))
             .wrap(NormalizePath::trim())
             .wrap(Logger::default())
             .wrap(Compress::default())

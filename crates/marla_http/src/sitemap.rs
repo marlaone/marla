@@ -1,11 +1,11 @@
 use actix_web::{
     error, get,
     http::{header::ContentType, StatusCode},
-    web, HttpRequest, HttpResponse, Responder,
+    HttpRequest, HttpResponse, Responder,
 };
 use anyhow::Result;
 use derive_more::{Display, Error};
-use marla_site::page::queries::PageClient;
+use marla_site::services::page::fetch_pages;
 use sitemap::{structs::UrlEntry, writer::SiteMapWriter};
 
 #[derive(Debug, Display, Error)]
@@ -34,15 +34,8 @@ impl error::ResponseError for SitemapError {
 }
 
 #[get("/sitemap.xml")]
-pub async fn sitemap_route(
-    req: HttpRequest,
-    page_client: web::Data<PageClient>,
-) -> Result<impl Responder, SitemapError> {
-    let pages = page_client
-        .query_pages(None)
-        .await
-        .map_err(|e| SitemapError::QueryError { msg: e.to_string() })?
-        .unwrap_or_default();
+pub async fn sitemap_route(req: HttpRequest) -> Result<impl Responder, SitemapError> {
+    let pages = fetch_pages(None);
 
     let mut sitemap_output = Vec::<u8>::new();
     let sitemap_writer = SiteMapWriter::new(&mut sitemap_output);

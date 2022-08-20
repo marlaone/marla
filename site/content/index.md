@@ -2,6 +2,8 @@
 title = "Startseite"
 description = "Wir sind die Hündin Marla und der Programmierer Jan-Philipp. Auf dieser Website findet man unterschiedliche Inhalte zu Hunde-, Alltags-Vlogs oder zum Thema Programmieren."
 keywords = ["programmieren", "web", "hund", "hunde", "vlogs", "web development", "rust", "go", "html", "css", "js", "javascript", "ts", "typescript"]
+test = "test"
+in_navigation = true
 ---
 
 # ❤-Willkommen

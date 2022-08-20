@@ -26,10 +26,6 @@ lazy_static! {
             .unwrap()
             .set_default::<&str, u16>("http.port", 1809)
             .unwrap()
-            .set_default("graphql.host", "localhost")
-            .unwrap()
-            .set_default::<&str, u16>("graphql.port", 1808)
-            .unwrap()
             .set_default("site.theme", "./site/themes/marla/")
             .unwrap()
             .build()
@@ -88,30 +84,6 @@ pub fn http_port() -> u16 {
     let default = 1809;
     match SETTINGS.read() {
         Ok(reader) => reader.get::<u16>("http.port").unwrap_or(default),
-        Err(_) => default,
-    }
-}
-
-pub fn graphql_protocol() -> String {
-    let default = "http".to_string();
-    match SETTINGS.read() {
-        Ok(reader) => reader.get_string("graphql.protocol").unwrap_or(default),
-        Err(_) => default,
-    }
-}
-
-pub fn graphql_host() -> String {
-    let default = "localhost".to_string();
-    match SETTINGS.read() {
-        Ok(reader) => reader.get_string("graphql.host").unwrap_or(default),
-        Err(_) => default,
-    }
-}
-
-pub fn graphql_port() -> u16 {
-    let default = 1808;
-    match SETTINGS.read() {
-        Ok(reader) => reader.get::<u16>("graphql.port").unwrap_or(default),
         Err(_) => default,
     }
 }

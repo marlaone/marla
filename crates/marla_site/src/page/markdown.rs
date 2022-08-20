@@ -5,7 +5,8 @@ use chrono::DateTime;
 use glob::glob;
 use log::error;
 use marla_core::config::site_content_path;
-use marla_markdown::{frontmatter::parse, load_markdown, markdown_to_html};
+use marla_markdown::{frontmatter::parse, load_markdown, markdown_to_html, strip};
+use voca_rs::Voca;
 
 use crate::utils::clean_path;
 
@@ -87,6 +88,9 @@ pub fn markdown_to_page(path: PathBuf) -> Result<Page> {
 
     let markdown = parse(&markdown_content)?;
 
+    let html = markdown_to_html(&markdown.content_markdown)?;
+    let plain = strip(&markdown.content_markdown);
+
     let page = Page {
         path: content_path_to_url_path(&path),
         meta: Some(PageMeta {
@@ -117,7 +121,9 @@ pub fn markdown_to_page(path: PathBuf) -> Result<Page> {
                 None => None,
             },
         }),
-        content: markdown_to_html(&markdown.content_markdown)?,
+        content: html,
+        words: plain._count_words(""),
+        plain,
         last_modified_at: DateTime::from(file_metadata.modified()?),
         created_at: DateTime::from(file_metadata.created()?),
         params: markdown.params,

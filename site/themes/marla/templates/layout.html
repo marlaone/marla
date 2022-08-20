@@ -29,50 +29,72 @@
 <body class="bg-base-200">
   <div>
     <nav class="sticky top-0 navbar bg-white z-50 h-20">
-      <div class="navbar-start w-full md:w-2/3 mx-auto px-4 md:px-16">
-        <!--<div class="dropdown">
+      <div class="navbar-start">
+        <div class="dropdown">
           <label tabindex="0" class="btn btn-ghost lg:hidden">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
           </label>
           <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
-            <li><a>Item 1</a></li>
-            <li tabindex="0">
+            {% for page in site.pages | in_navigation %}
+            {% set nav_sub_pages = sub_pages(page=page, pages=site.pages) | in_navigation %}
+            {% set nav_sub_pages_len = nav_sub_pages | length %}
+            <li tabindex="{{ loop.index0 }}">
               <a class="justify-between">
-                Parent
+                {{ page.meta.title }}
+                {% if nav_sub_pages_len > 0 %}
                 <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/></svg>
+                {% endif %}
               </a>
+              {% if nav_sub_pages_len > 0 %}
               <ul class="bg-base-100 p-2">
-                <li><a>Submenu 1</a></li>
-                <li><a>Submenu 2</a></li>
+                {% for nav_sub_page in nav_sub_pages %}
+                <li><a href="{{ nav_sub_page.path }}">{{ nav_sub_page.meta.title }}</a></li>
+                {% endfor %}
               </ul>
+              {% endif %}
             </li>
-            <li><a>Item 3</a></li>
+            {% endfor %}
           </ul>
-        </div>--> 
+        </div> 
         <a href="/" class="inline-flex align-middle justify-center items-center cursor-pointer p-4 font-monoglyceride normal-case text-xl">
           <img src="/assets/images/logo.svg" class="h-12 mr-4" alt="logo" />
-          Marla.ONE
+          <span class="hidden md:inline-block">Marla.ONE</span>
         </a>
       </div>
-      <!--<div class="navbar-center hidden lg:flex">
+      <div class="navbar-center hidden lg:flex">
         <ul class="menu menu-horizontal p-0">
-          <li><a>Item 1</a></li>
-          <li tabindex="0">
-            <a>
-              Parent
+          {% for page in site.pages | in_navigation %}
+          {% set nav_sub_pages = sub_pages(page=page, pages=site.pages) | in_navigation %}
+          {% set nav_sub_pages_len = nav_sub_pages | length %}
+          <li tabindex="{{ loop.index0 }}">
+            <a href="{{ page.path }}">
+              {{ page.meta.title }}
+              {% if nav_sub_pages_len > 0 %}
               <svg class="fill-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z"/></svg>
+              {% endif %}
             </a>
-            <ul class="  p-2">
-              <li><a>Submenu 1</a></li>
-              <li><a>Submenu 2</a></li>
+            {% if nav_sub_pages_len > 0 %}
+            <ul class="bg-base-100 p-2">
+              {% for nav_sub_page in nav_sub_pages %}
+              <li><a href="{{ nav_sub_page.path }}">{{ nav_sub_page.meta.title }}</a></li>
+              {% endfor %}
             </ul>
+            {% endif %}
           </li>
-          <li><a>Item 3</a></li>
+          {% endfor %}
         </ul>
-      </div>-->
-      <!--<div class="navbar-end">
-        <a class="btn">Get started</a>
-      </div>-->
+      </div>
+      <div class="navbar-end">
+        <a href="https://www.instagram.com/marla.one/" target="_blank" class="btn btn-secondary btn-xs md:btn-sm mr-4">
+          <i class="fa-brands fa-instagram md:text-lg"></i>
+        </a>
+        <a href="https://www.youtube.com/channel/UCVPdKKb08DTGFxFfO5SOPzA" target="_blank" class="btn btn-xs md:btn-sm mr-4 bg-red-600 border-red-600 hover:bg-red-700 hover:border-red-700">
+          <i class="fa-brands fa-youtube md:text-lg"></i>
+        </a>
+        <a href="https://www.twitch.tv/marla_dev" target="_blank" class="btn btn-xs md:btn-sm mr-4 bg-purple-600 border-purple-600 hover:bg-purple-700 hover:border-purple-700">
+          <i class="fa-brands fa-twitch md:text-lg"></i>
+        </a>
+      </div>
     </nav>
     {% block hero %}
     <header>
@@ -86,27 +108,11 @@
             <a href="https://www.twitch.tv/marla_dev" target="_blank" class="btn btn-primary">Folge der Entwicklung auf Twitch</a>
             {% endblock hero_content %}
           </div>
-          {% block hero_additional %}
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 mb-16 max-w-3xl w-full">
-            <a href="https://www.instagram.com/marla.one/" target="_blank" class="btn btn-secondary">
-              <i class="fa-brands fa-instagram text-2xl mr-4"></i>
-              Instagram
-            </a>
-            <a href="https://www.youtube.com/channel/UCVPdKKb08DTGFxFfO5SOPzA" target="_blank" class="btn bg-red-600 border-red-600 hover:bg-red-700 hover:border-red-700">
-              <i class="fa-brands fa-youtube text-2xl mr-4"></i>
-              YouTube
-            </a>
-            <a href="https://www.twitch.tv/marla_dev" target="_blank" class="btn bg-purple-600 border-purple-600 hover:bg-purple-700 hover:border-purple-700">
-              <i class="fa-brands fa-twitch text-2xl mr-4"></i>
-              Twitch
-            </a>
-          </div>
-          {% endblock hero_additional %}
         </div>
       </section>
     </header>
     {% endblock hero %}    
-    <main class="justify-center flex px-4 md:px-16 py-8">
+    <main class="justify-center flex flex-wrap px-4 md:px-16 py-8">
         {% block content_container %}
         <div class="card w-full md:w-2/3 bg-base-100 shadow-xl -mt-16">
             <div class="card-body max-w-none prose">

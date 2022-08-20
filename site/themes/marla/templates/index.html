@@ -1,5 +1,4 @@
 {% extends "layout.html" %}
-{% block content_container %}
-  <h1> INDEX </h1>  
-  {{ site.page.content | safe }}
-{% endblock content_container %}
+{% block content %}
+    {{ site.page.content | safe }}
+{% endblock content %}

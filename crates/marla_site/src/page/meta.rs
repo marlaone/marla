@@ -1,6 +1,4 @@
-use juniper::GraphQLObject;
-
-#[derive(Debug, Clone, serde::Deserialize, serde::Serialize, GraphQLObject)]
+#[derive(Debug, Clone, serde::Deserialize, serde::Serialize)]
 pub struct PageMeta {
     pub title: Option<String>,
     pub description: Option<String>,
