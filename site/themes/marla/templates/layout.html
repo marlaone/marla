@@ -74,15 +74,19 @@
         <a class="btn">Get started</a>
       </div>-->
     </nav>
+    {% block hero %}
     <header>
-      <section class="hero" style="background-image: url(/assets/images/SM-03.jpg);">
+      <section class="hero" style="background-image: url({% block hero_background_image %}/assets/images/SM-03.jpg{% endblock hero_background_image %});">
         <div class="hero-overlay bg-opacity-20"></div>
         <div class="hero-content text-center text-neutral-content flex-wrap">
           <div class="max-w-3xl mb-24 mt-16 basis-full">
+            {% block hero_content %}
             <h1 class="mb-8 text-5xl font-bold">🚧 Website in der Entstehung 🚧</h1>
             <p class="mb-8 text-xl">Wir sind die 🐕‍🦺 Hündin Marla und der 🤓 Programmierer Jan-Philipp.</p>
             <a href="https://www.twitch.tv/marla_dev" target="_blank" class="btn btn-primary">Folge der Entwicklung auf Twitch</a>
+            {% endblock hero_content %}
           </div>
+          {% block hero_additional %}
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 px-4 mb-16 max-w-3xl w-full">
             <a href="https://www.instagram.com/marla.one/" target="_blank" class="btn btn-secondary">
               <i class="fa-brands fa-instagram text-2xl mr-4"></i>
@@ -97,15 +101,19 @@
               Twitch
             </a>
           </div>
+          {% endblock hero_additional %}
         </div>
       </section>
     </header>
-    <main class="justify-center flex px-4 md:px-16 py-8 -mt-16">
-        <div class="card w-full md:w-2/3 bg-base-100 shadow-xl">
+    {% endblock hero %}    
+    <main class="justify-center flex px-4 md:px-16 py-8">
+        {% block content_container %}
+        <div class="card w-full md:w-2/3 bg-base-100 shadow-xl -mt-16">
             <div class="card-body max-w-none prose">
               {% block content %}{% endblock content %}
             </div>
         </div>
+        {% endblock content_container %}
     </main>
 </div>
 <div class="bg-primary">

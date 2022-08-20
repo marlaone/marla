@@ -4,7 +4,10 @@ use marla_core::config::{graphql_host, graphql_port, graphql_protocol};
 use reqwest;
 use std::{error::Error, time::Duration};
 
-use self::{all_pages::AllPagesPages, page_by_path::PageByPathPage};
+use self::{
+    all_pages::{AllPagesPages, AllPagesPagesMeta},
+    page_by_path::{PageByPathPage, PageByPathPageMeta},
+};
 
 type DateTimeUtc = DateTime<Utc>;
 
@@ -15,6 +18,31 @@ type DateTimeUtc = DateTime<Utc>;
     response_derives = "Debug,serde::Serialize,Clone,Default"
 )]
 pub struct PageByPath;
+
+impl From<AllPagesPages> for PageByPathPage {
+    fn from(page: AllPagesPages) -> PageByPathPage {
+        PageByPathPage {
+            meta: match page.meta {
+                Some(meta) => Some(PageByPathPageMeta::from(meta)),
+                None => None,
+            },
+            content: page.content,
+            path: page.path,
+            last_modified_at: page.last_modified_at,
+            created_at: page.created_at,
+        }
+    }
+}
+
+impl From<AllPagesPagesMeta> for PageByPathPageMeta {
+    fn from(meta: AllPagesPagesMeta) -> PageByPathPageMeta {
+        PageByPathPageMeta {
+            title: meta.title,
+            description: meta.description,
+            keywords: meta.keywords,
+        }
+    }
+}
 
 #[derive(GraphQLQuery)]
 #[graphql(
