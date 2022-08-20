@@ -28,8 +28,8 @@
 </head>
 <body class="bg-base-200">
   <div>
-    <nav class="navbar relative bg-white z-50 h-20">
-      <div class="navbar-start">
+    <nav class="sticky top-0 navbar bg-white z-50 h-20">
+      <div class="navbar-start w-full md:w-2/3 mx-auto px-4 md:px-16">
         <!--<div class="dropdown">
           <label tabindex="0" class="btn btn-ghost lg:hidden">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
@@ -108,24 +108,28 @@
         </div>
     </main>
 </div>
-<footer class="footer p-10 bg-primary text-base-content">
-  <div class="gap-4">
-    <img src="/assets/images/logo_text_white.svg" class="w-36" alt="logo" />
-    <p>&copy; seit 2022</p>
-  </div> 
-  <div class="gap-4">
-    <span class="footer-title">Links</span> 
-    <a href="https://www.instagram.com/marla.one/" target="_blank" class="link link-hover">Instagram</a> 
-    <a href="https://www.youtube.com/channel/UCVPdKKb08DTGFxFfO5SOPzA" target="_blank" class="link link-hover">YouTube</a> 
-    <a href="https://www.twitch.tv/marla_dev" target="_blank" class="link link-hover">Twitch</a> 
-    <a href="https://github.com/marlaone/website" class="link link-hover" target="_blank">GitHub</a>
-  </div> 
-  <div class="gap-4">
-    <span class="footer-title">Rechtliches</span> 
-    <a href="/impressum" class="link link-hover">Impressum</a> 
-    <a href="/datenschutz" class="link link-hover">Datenschutz</a> 
-  </div>
-</footer>
+<div class="bg-primary">
+  <footer class="footer p-10 bg-primary text-base-content w-full md:w-2/3 mx-auto px-4 md:px-16">
+    <div class="gap-4">
+      <a href="/">
+        <img src="/assets/images/logo_text_white.svg" class="w-36" alt="logo" />
+      </a>
+      <p>&copy; seit 2022</p>
+    </div> 
+    <div class="gap-4">
+      <span class="footer-title">Links</span> 
+      <a href="https://www.instagram.com/marla.one/" target="_blank" class="link link-hover">Instagram</a> 
+      <a href="https://www.youtube.com/channel/UCVPdKKb08DTGFxFfO5SOPzA" target="_blank" class="link link-hover">YouTube</a> 
+      <a href="https://www.twitch.tv/marla_dev" target="_blank" class="link link-hover">Twitch</a> 
+      <a href="https://github.com/marlaone/website" class="link link-hover" target="_blank">GitHub</a>
+    </div> 
+    <div class="gap-4">
+      <span class="footer-title">Rechtliches</span> 
+      <a href="/impressum" class="link link-hover">Impressum</a> 
+      <a href="/datenschutz" class="link link-hover">Datenschutz</a> 
+    </div>
+  </footer>
+</div>
 <script src="/marla-elements/marla-elements.umd.js"></script>
 </body>
 </html>
