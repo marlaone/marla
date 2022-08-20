@@ -14,6 +14,7 @@ pub struct Page {
     pub content: String,
     pub last_modified_at: DateTime<Utc>,
     pub created_at: DateTime<Utc>,
+    pub params: toml::value::Table,
 }
 
 #[graphql_object]

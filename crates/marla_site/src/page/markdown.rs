@@ -11,7 +11,7 @@ use crate::utils::clean_path;
 
 use super::{meta::PageMeta, Page};
 
-pub fn path_to_content_path(path: String, ext: Option<String>) -> PathBuf {
+pub fn path_to_content_path(path: &String, ext: Option<String>) -> PathBuf {
     let content_ext = match ext {
         Some(type_name) => type_name,
         None => ".md".to_string(),
@@ -85,14 +85,42 @@ pub fn markdown_to_page(path: PathBuf) -> Result<Page> {
 
     let markdown_content = load_markdown(&path)?;
 
-    let markdown = parse::<PageMeta>(&markdown_content)?;
+    let markdown = parse(&markdown_content)?;
 
     let page = Page {
         path: content_path_to_url_path(&path),
-        meta: Some(markdown.meta),
+        meta: Some(PageMeta {
+            title: match markdown.params.get("title") {
+                Some(title_param) => match title_param.as_str() {
+                    Some(title) => Some(title.to_string()),
+                    None => None,
+                },
+                None => None,
+            },
+            description: match markdown.params.get("description") {
+                Some(title_param) => match title_param.as_str() {
+                    Some(description) => Some(description.to_string()),
+                    None => None,
+                },
+                None => None,
+            },
+            keywords: match markdown.params.get("keywords") {
+                Some(title_param) => match title_param.as_array() {
+                    Some(keywords) => Some(
+                        keywords
+                            .iter()
+                            .map(|k| k.as_str().unwrap_or_default().to_string())
+                            .collect(),
+                    ),
+                    None => None,
+                },
+                None => None,
+            },
+        }),
         content: markdown_to_html(&markdown.content_markdown)?,
         last_modified_at: DateTime::from(file_metadata.modified()?),
         created_at: DateTime::from(file_metadata.created()?),
+        params: markdown.params,
     };
 
     return Ok(page);

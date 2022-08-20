@@ -1,25 +1,24 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct Markdown<T> {
-    pub meta: T,
+pub struct Markdown {
+    pub params: toml::value::Table,
     pub content_markdown: String,
 }
 
 const FRONTMATTER_DELIMITER: &str = "---";
 
-pub fn parse_frontmatter<'de, T>(post: &'de str) -> Result<(T, &'de str), toml::de::Error>
-where
-    T: serde::Deserialize<'de> + Default,
-{
+pub fn parse_frontmatter<'de>(
+    post: &'de str,
+) -> Result<(toml::value::Table, &'de str), toml::de::Error> {
     if !post.starts_with(FRONTMATTER_DELIMITER) {
-        return Ok((T::default(), post));
+        return Ok((toml::value::Table::new(), post));
     }
 
     let slice = &post[FRONTMATTER_DELIMITER.len()..];
     let index_of_ending_line = slice.find(FRONTMATTER_DELIMITER).unwrap_or(0);
     if index_of_ending_line == 0 {
-        return Ok((T::default(), post));
+        return Ok((toml::value::Table::new(), post));
     }
 
     return Ok((
@@ -28,14 +27,11 @@ where
     ));
 }
 
-pub fn parse<'de, T>(source: &'de str) -> Result<Markdown<T>, toml::de::Error>
-where
-    T: serde::Deserialize<'de> + Default,
-{
-    let (meta, rest): (T, &'de str) = parse_frontmatter(source)?;
+pub fn parse<'de>(source: &'de str) -> Result<Markdown, toml::de::Error> {
+    let (params, rest): (toml::value::Table, &'de str) = parse_frontmatter(source)?;
 
     Ok(Markdown {
-        meta,
+        params,
         content_markdown: String::from(rest),
     })
 }

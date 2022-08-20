@@ -5,7 +5,7 @@ use glob::glob;
 use marla_core::config::{site_content_path, site_theme_path};
 use tera::{from_value, to_value, Context as TeraContext, Result as TeraResult, Tera, Value};
 
-use crate::{page::queries::page_by_path::PageByPathPage, utils::clean_path};
+use crate::{page::queries::page_by_path::PageByPathPage, site::Site, utils::clean_path};
 
 pub fn get_theme_path() -> Result<String> {
     let mut theme_path = site_theme_path();
@@ -157,16 +157,16 @@ impl Theme {
         })
     }
 
-    pub fn render_template(&mut self, template: &str) -> Result<String> {
+    pub fn render_template(&mut self, template: &str, site: &Site) -> Result<String> {
         let mut context = TeraContext::new();
-        context.insert("page", &PageByPathPage::default());
+        context.insert("site", site);
 
         Ok(self.tera.render(template, &context)?)
     }
 
-    pub fn render_page(&mut self, page: PageByPathPage) -> Result<String> {
+    pub fn render_page(&mut self, site: &Site) -> Result<String> {
         let mut context = TeraContext::new();
-        context.insert("page", &page);
+        context.insert("site", site);
 
         Ok(self.tera.render("page.html", &context)?)
     }

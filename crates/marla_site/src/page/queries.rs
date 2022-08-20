@@ -27,6 +27,7 @@ pub struct AllPages;
 #[derive(Debug, Clone)]
 pub struct PageClient {
     cache: moka::future::Cache<String, PageByPathPage>,
+    pages_cache: moka::future::Cache<String, Vec<AllPagesPages>>,
 }
 
 impl PageClient {
@@ -37,6 +38,11 @@ impl PageClient {
                 .time_to_live(Duration::from_secs(3600))
                 .time_to_idle(Duration::from_secs(5 * 60))
                 .build(),
+            pages_cache: moka::future::Cache::builder()
+                .max_capacity(100)
+                .time_to_live(Duration::from_secs(5 * 60))
+                .time_to_idle(Duration::from_secs(60))
+                .build(),
         }
     }
 
@@ -44,6 +50,18 @@ impl PageClient {
         &self,
         sub_path: Option<String>,
     ) -> Result<Option<Vec<AllPagesPages>>, Box<dyn Error>> {
+        let mut cache_key = "all_pages".to_string();
+        if let Some(some_sub_path) = &sub_path {
+            cache_key.push_str("_");
+            cache_key.push_str(some_sub_path);
+        }
+
+        let cached_pages = self.pages_cache.get(&cache_key);
+
+        if let Some(cached_pages) = cached_pages {
+            return Ok(Some(cached_pages));
+        }
+
         let request_body = AllPages::build_query(all_pages::Variables { sub_path });
 
         let client = reqwest::Client::new();
@@ -55,16 +73,20 @@ impl PageClient {
         let response_body: Response<all_pages::ResponseData> = res.json().await?;
 
         match response_body.data {
-            Some(data) => Ok(Some(data.pages)),
+            Some(data) => {
+                self.pages_cache.insert(cache_key, data.pages.clone()).await;
+
+                return Ok(Some(data.pages));
+            }
             None => Ok(None),
         }
     }
 
     pub async fn query_page_by_path(
         &self,
-        path: String,
+        path: &String,
     ) -> Result<Option<PageByPathPage>, Box<dyn Error>> {
-        let variables = page_by_path::Variables { path };
+        let variables = page_by_path::Variables { path: path.clone() };
         let cache_key = variables.path.clone();
         let cached_page = self.cache.get(&cache_key);
         if cached_page.is_some() {

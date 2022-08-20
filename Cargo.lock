@@ -1633,6 +1633,7 @@ dependencies = [
  "marla_site",
  "num_cpus",
  "tokio",
+ "toml",
 ]
 
 [[package]]
@@ -1681,7 +1682,9 @@ dependencies = [
  "path-clean",
  "reqwest",
  "serde",
+ "serde_json",
  "tera",
+ "toml",
  "url",
 ]
 

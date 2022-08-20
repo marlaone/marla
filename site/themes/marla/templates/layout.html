@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     {% block head %}
-      <title>{% block title %}{% if has_meta_title(page=page) %}{{ meta_title(page=page) }}{% endif %}{% endblock title %} - Marla.ONE</title>
-      {% if has_meta_description(page=page) %}
-        <meta name="description" content="{{ meta_description(page=page) | truncate(length=160) }}">
+      <title>{% block title %}{% if has_meta_title(page=site.page) %}{{ meta_title(page=site.page) }}{% endif %}{% endblock title %} - Marla.ONE</title>
+      {% if has_meta_description(page=site.page) %}
+        <meta name="description" content="{{ meta_description(page=site.page) | truncate(length=160) }}">
       {% endif %}
-      {% if has_meta_keywords(page=page) %}
-        <meta name="keywords" content="{{ meta_keywords(page=page) | join(sep=",") }}">
+      {% if has_meta_keywords(page=site.page) %}
+        <meta name="keywords" content="{{ meta_keywords(page=site.page) | join(sep=",") }}">
       {% endif %}
     {% endblock head %}
     <link rel="stylesheet" href="/marla-elements/style.css">
@@ -20,11 +20,11 @@
     <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#F7A614">
     <meta name="msapplication-TileColor" content="#F7A614">
     <meta name="theme-color" content="#ffffff">
-    <script type="module">
+    {# <script type="module">
       import flamethrower from '/assets/js/flamethrower.js'
 
       flamethrower({ prefetch: 'visible', log: false, pageTransitions: true, });
-    </script>
+    </script> #}
 </head>
 <body class="bg-base-200">
   <div>

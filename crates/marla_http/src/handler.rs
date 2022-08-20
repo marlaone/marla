@@ -14,6 +14,7 @@ use derive_more::{Display, Error};
 use marla_core::config::site_output_path;
 use marla_site::{
     page::{markdown::path_to_content_path, queries::PageClient},
+    site::Site,
     theme::{get_theme_path, Theme},
 };
 use tokio::sync::Mutex;
@@ -30,6 +31,8 @@ pub enum PageError {
     StaticError { msg: String },
     #[display(fmt = "something went wrong: {}", msg)]
     ServiceFailure { msg: String },
+    #[display(fmt = "failed to construct site object: {}", msg)]
+    SiteError { msg: String },
 }
 
 impl error::ResponseError for PageError {
@@ -45,6 +48,7 @@ impl error::ResponseError for PageError {
             PageError::RenderError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
             PageError::StaticError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
             PageError::ServiceFailure { .. } => StatusCode::INTERNAL_SERVER_ERROR,
+            PageError::SiteError { .. } => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 }
@@ -104,10 +108,9 @@ fn serve_static_files(req: &HttpRequest) -> Result<Option<HttpResponse>, PageErr
 
 async fn serve_html_template(
     theme: web::Data<Mutex<Theme>>,
-    req: &HttpRequest,
+    site: &Site,
 ) -> Result<Option<HttpResponse>, PageError> {
-    let content_path =
-        path_to_content_path(req.uri().path().to_string(), Some(".html".to_string()));
+    let content_path = path_to_content_path(&site.path, Some(".html".to_string()));
 
     return Ok(if content_path.exists() {
         Some(
@@ -117,7 +120,7 @@ async fn serve_html_template(
                     theme
                         .lock()
                         .await
-                        .render_template(content_path.to_str().unwrap_or_default())
+                        .render_template(content_path.to_str().unwrap_or_default(), &site)
                         .map_err(|e| PageError::RenderError { msg: e.to_string() })?,
                 ),
         )
@@ -137,25 +140,23 @@ pub async fn page(
         None => (),
     }
 
-    match serve_html_template(theme.clone(), &req).await? {
+    let site = Site::from_content_path(req.uri().path().to_string(), &page_client)
+        .await
+        .map_err(|e| PageError::SiteError { msg: e.to_string() })?;
+
+    match serve_html_template(theme.clone(), &site).await? {
         Some(res) => return Ok(res),
         None => (),
     }
 
-    // graphql api
-    let potential_page = page_client
-        .query_page_by_path(req.uri().path().to_string())
-        .await
-        .map_err(|e| PageError::QueryError { msg: e.to_string() })?;
-
-    match potential_page {
-        Some(page) => Ok(HttpResponse::build(StatusCode::OK)
+    match &site.page {
+        Some(_) => Ok(HttpResponse::build(StatusCode::OK)
             .insert_header(ContentType::html())
             .body(
                 theme
                     .lock()
                     .await
-                    .render_page(page)
+                    .render_page(&site)
                     .map_err(|e| PageError::RenderError { msg: e.to_string() })?,
             )),
         None => Err(PageError::PageNotFound),

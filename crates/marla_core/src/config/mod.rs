@@ -20,6 +20,8 @@ lazy_static! {
             .add_source(config::Environment::with_prefix("MARLA"))
             .set_default("site.content", "./site/content/")
             .unwrap()
+            .set_default("site.data", "./site/data/")
+            .unwrap()
             .set_default("http.host", "localhost")
             .unwrap()
             .set_default::<&str, u16>("http.port", 1809)
@@ -63,6 +65,14 @@ pub fn site_output_path() -> String {
     match SETTINGS.read() {
         Ok(reader) => reader.get_string("site.output").unwrap_or_default(),
         Err(_) => "".to_string(),
+    }
+}
+
+pub fn site_data_path() -> String {
+    let default = "./site/data/".to_string();
+    match SETTINGS.read() {
+        Ok(reader) => reader.get_string("site.data").unwrap_or(default),
+        Err(_) => default,
     }
 }
 
