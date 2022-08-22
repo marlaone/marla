@@ -35,7 +35,7 @@ impl error::ResponseError for SitemapError {
 
 #[get("/sitemap.xml")]
 pub async fn sitemap_route(req: HttpRequest) -> Result<impl Responder, SitemapError> {
-    let pages = fetch_pages(None);
+    let pages = fetch_pages(None, None);
 
     let mut sitemap_output = Vec::<u8>::new();
     let sitemap_writer = SiteMapWriter::new(&mut sitemap_output);

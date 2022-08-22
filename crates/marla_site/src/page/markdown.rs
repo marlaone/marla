@@ -6,13 +6,18 @@ use glob::glob;
 use log::error;
 use marla_core::config::site_content_path;
 use marla_markdown::{frontmatter::parse, load_markdown, markdown_to_html, strip};
+use regex::Regex;
 use voca_rs::Voca;
 
-use crate::utils::clean_path;
+use crate::{services::page::get_page_path, utils::clean_path};
 
 use super::{meta::PageMeta, Page};
 
-pub fn path_to_content_path(path: &String, ext: Option<String>) -> PathBuf {
+pub fn path_to_content_path(
+    path: &String,
+    lang_tag: Option<&String>,
+    ext: Option<String>,
+) -> PathBuf {
     let content_ext = match ext {
         Some(type_name) => type_name,
         None => ".md".to_string(),
@@ -35,6 +40,7 @@ pub fn path_to_content_path(path: &String, ext: Option<String>) -> PathBuf {
                 if !content_path.ends_with("/") {
                     content_path.push_str("/");
                 }
+
                 content_path.push_str(("index".to_owned() + content_ext.as_str()).as_str());
             }
         }
@@ -47,7 +53,10 @@ pub fn path_to_content_path(path: &String, ext: Option<String>) -> PathBuf {
 
     content_path = content_path.replace("..", ".");
 
-    return clean_path(&contents_path.as_path().join(content_path));
+    return get_page_path(
+        clean_path(&contents_path.as_path().join(&content_path)),
+        lang_tag,
+    );
 }
 
 pub fn content_path_to_url_path(path: &PathBuf) -> String {
@@ -56,10 +65,14 @@ pub fn content_path_to_url_path(path: &PathBuf) -> String {
     let page_path = String::from(path.to_str().unwrap_or_default())
         .replace(contents_path.as_str(), "")
         .replace(&contents_path.as_str()[1..], "")
-        .replace(&contents_path.as_str()[2..], "")
+        .replace(&contents_path.as_str()[2..], "");
+
+    let re = Regex::new(r"^(?P<p>.*/)?index\.([a-zA-Z]+\.)?(md|html)").unwrap();
+    let page_path = re
+        .replace(&page_path, "$p")
+        .to_string()
         .replace(".md", "")
-        .replace(".html", "")
-        .replace("index", "");
+        .replace(".html", "");
 
     let page_url = PathBuf::from("https://marla.one/")
         .join(page_path)
@@ -132,7 +145,7 @@ pub fn markdown_to_page(path: PathBuf) -> Result<Page> {
     return Ok(page);
 }
 
-pub fn get_pages(sub_path: Option<String>) -> Result<Vec<Page>> {
+pub fn get_pages(sub_path: Option<String>, lang_tag: Option<&String>) -> Result<Vec<Page>> {
     let mut pages = Vec::new();
 
     for &ext in ["md", "html"].iter() {
@@ -147,7 +160,7 @@ pub fn get_pages(sub_path: Option<String>) -> Result<Vec<Page>> {
 
         for content_entry in glob(&contents_path)? {
             match content_entry {
-                Ok(page_path) => pages.push(markdown_to_page(page_path)?),
+                Ok(page_path) => pages.push(markdown_to_page(get_page_path(page_path, lang_tag))?),
                 Err(e) => error!("{:?}", e),
             }
         }

@@ -7,7 +7,10 @@ use actix_files::NamedFile;
 use actix_web::{
     body::MessageBody,
     error, get,
-    http::{header::ContentType, StatusCode},
+    http::{
+        header::{self, ContentType},
+        StatusCode,
+    },
     web, HttpRequest, HttpResponse, Responder,
 };
 use derive_more::{Display, Error};
@@ -108,9 +111,10 @@ fn serve_static_files(req: &HttpRequest) -> Result<Option<HttpResponse>, PageErr
 
 async fn serve_html_template(
     theme: web::Data<Mutex<Theme>>,
+    lang_tag: Option<&String>,
     site: &Site,
 ) -> Result<Option<HttpResponse>, PageError> {
-    let content_path = path_to_content_path(&site.path, Some(".html".to_string()));
+    let content_path = path_to_content_path(&site.path, lang_tag, Some(".html".to_string()));
 
     return Ok(if content_path.exists() {
         Some(
@@ -139,11 +143,28 @@ pub async fn page(
         None => (),
     }
 
-    let site = Site::from_content_path(req.uri().path().to_string())
+    let accept_language = req.headers().get(header::ACCEPT_LANGUAGE);
+    let lang_tag = match accept_language {
+        Some(accept_language) => {
+            if let Some(lang_tag) = accept_language
+                .to_str()
+                .unwrap_or_default()
+                .split("-")
+                .next()
+            {
+                Some(lang_tag.to_string())
+            } else {
+                None
+            }
+        }
+        None => None,
+    };
+
+    let site = Site::from_content_path(req.uri().path().to_string(), lang_tag.as_ref())
         .await
         .map_err(|e| PageError::SiteError { msg: e.to_string() })?;
 
-    match serve_html_template(theme.clone(), &site).await? {
+    match serve_html_template(theme.clone(), lang_tag.as_ref(), &site).await? {
         Some(res) => return Ok(res),
         None => (),
     }

@@ -1,96 +1,94 @@
 # My love to rust and go
 
-## Einleitung
+## Introduction
 
-Viele Jahre lang war ich hauptsächlich PHP-Backend und JS-Frontend Developer, bis ich vor ein paar Jahren für mich Go entdeckt hatte.
-Go hat für mich eine ganz neue Welt eröffnet - ich war erst immer gegen diese ganzen Typen basierten Sprachen. "Das ist doch alles unnötig kompliziert, wenn man gut programmiert, dann ist PHP auch stabil und bugfrei", dachte ich mir immer.
-Doch Go ist auch so leicht zu programmieren UND bietet einfach eine wunderschöne Typensicherheit und vor allem - Go wird nicht interpretiert. Asynchrone Programmierung war auf einmal viel einfacher.
+For many years I was mainly a PHP backend and JS frontend developer until I discovered Go a few years ago.
+Go opened up a whole new world for me - I was always against all these type based languages at first. "That's all unnecessarily complicated, if you program well, PHP is also stable and bug-free", I always thought to myself.
+But Go is also so easy to program AND offers just a beautiful type safety and above all - Go is not interpreted. Asynchronous programming was suddenly much easier.
 
-Viele Side Projects entstanden daraus erstmal, um die Programmiersprache kennenzulernen.
+Many side projects emerged from this first to get to know the programming language.
 
-Ein Turnier-Tool, über das wir unsere Firmen internen FIFA Turniere verwalten konnten.
+A tournament tool, through which we could manage our company's internal FIFA tournaments.
 
-[Bild vom System]
+[Picture of the system]
 
-Frames, die von einem bestimmtem Windows-Fenster (Blobby Volley) eingefangen wurden und mit OpenCV wurden dort drin die Blobs, sowie der Ball erkannt. Darauf habe ich anhand der Informationen einen Bot geschrieben, der über einen virtuellen Xbox Controller gesteuert wurde.
+Frames captured from a certain Windows window (Blobby Volley) and with OpenCV the blobs were detected in there, as well as the ball. Based on this information, I wrote a bot that was controlled by a virtual Xbox controller.
 
-[Bild vom Blobby Volley mit Debug Ansicht]
+[Picture of the Blobby Volley with debug view]
 
-Und ab da fing Go einfach an für mich richtig cool zu werden. Man kann damit einfach alle möglichen Probleme lösen. Egal, ob ein Standard HTTP Server oder Windows Dienste zu steuern, Machine Learning, usw. Gefühlt ist alles möglich. In PHP wären solche Sideprojects für mich undenkbar gewesen.
+And from then on Go just started to become really cool for me. You can just solve all kinds of problems with it. No matter if you want to control a standard HTTP server or Windows services, machine learning, etc. It feels like anything is possible. In PHP such sideprojects would have been unthinkable for me.
 
-Also direkt ans nächste Side Project: Warum nicht ein 2D Spiel in Go programmieren?
+So directly to the next side project: Why not program a 2D game in Go?
 
-[Bild vom Spiel]
+[Picture of the game]
 
-Und so enstand für mich eine große Liebe für Go.
+And so I developed a great love for Go.
 
---Side Note: Ja, das sind viele Side Projects und keins davon hat es bis zu einem finalen Produkt geschafft. Aber das ist noch ein Thema für eine spätere Stunde.--
+--Side Note: Yes, that's a lot of side projects and none of them made it to a final product. But that's another topic for a later lesson.
 
-## Die Große Liebe zu Go
+## The Great Love For Go
 
-Von da an, waren alle meine Projekte in Go und bis heute möchte ich auch gerne noch das JavaScript im Frontend durch Go ersetzt bekommen, damit ich nur noch mit den coolen Kids spielen darf. Es gibt da auch Möglichkeiten, aber das ist alles noch nicht ausgereift genug für große, produktive Projekte.
+From then on, all my projects were in Go and to this day, I would also like to get the JavaScript in the frontend replaced with Go so I can just play with the cool kids all the time. There are possibilities, but it's not mature enough for big, productive projects yet.
 
-Die Liebe war mittlerweile so groß, dass meine Mutter mir sogar den Gopher gehäkelt hat, der mich nun immer auf meinem Schreibtisch begleitet.
+Meanwhile the love was so big that my mother even crocheted me the Gopher, which now always accompanies me on my desk.
 
-[Bild von Gophy]
+[Image by Gophy]
 
-Nachdem ich meine Arbeitskollegen auch lang genug genervt habe und auch mit einem Proof-of-Concept mal gezeigt hatte, wie viel einfacher, stabiler und performanter wir in Go entwickeln könnten, fand sich die Programmiersprache auch schnell in meinem Arbeitsalltag wieder. Wir waren eh an einem Punkt, andem wir unser komplettes Produkt neu entwickeln wollten und somit war der Zeitpunkt für Go perfekt.
+After I had annoyed my colleagues long enough and had shown with a proof-of-concept how much easier, more stable and performant we could develop in Go, the programming language quickly found its way into my daily work. We were at a point where we wanted to redevelop our entire product anyway, so the timing was perfect for Go.
 
-Unser Tracking wurde dann auch von PHP auf Go umgebaut und statt 80.000 Requests pro Minute, schaffen wir nun 72.000.000 Requests pro Minute. Natürlich macht nicht nur Go alleine diesen Unterschied, aber alleine, dass wir nun viel asynchroner arbeiten können, statt in einer interpretierten Programmiersprache festzuhängen, lassen sich ganz andere Architekturen implementieren.
+Our tracking was then also converted from PHP to Go and instead of 80,000 requests per minute, we now manage 72,000,000 requests per minute. Of course, Go alone does not make this difference, but the fact that we can now work much more asynchronously instead of being stuck in an interpreted programming language allows us to implement completely different architectures.
 
-Und auch dem Klima tun wir damit was Gutes. Nachdem wir das neue Tracking bei einem Kunden Live geschaltet hatten, kühlte sich die CPU vom im Durchschnitt von 80°C auf 40°C runter - also ein viel geringerer Energieverbrauch. Wir bräuchten nun theoretisch auch gar nicht mehr Server mit super starker Hardware und können dadurch auch nochmal Geld einsparen, aber das Thema ist da auch noch mal komplexer und darum geht es hier auch gar nicht.
+And we're also doing something good for the climate. After we went live with the new tracking at a customer, the CPU cooled down from an average of 80°C to 40°C - so much lower energy consumption. Theoretically, we wouldn't need any more servers with super powerful hardware and could save money, but the topic is even more complex and that's not the point here.
 
-[Bild von der CPU]
+[Picture of the CPU]
 
-Gefesselt von der neuen Performance, ging es noch weiter an den Gedanken: "Wie lässt sich das Ganze noch mehr optimieren?" und nachdem das "Go"-Spiel durchgespielt war, entdeckte ich Rust.
+Captivated by the new performance, I went on to think: "How can this be optimized even more?" and after playing through the "Go" game, I discovered Rust.
 
-## Die exotische Neue
+## The Exotic New Woman
 
-Nichtsahnend und eigentlich in einer glücklichen Beziehung mit Go kam Rust um die Ecke. Angeblich die schnellste Programmiersprache nach C (oder sogar genau so schnell), die man lernen kann. Und das sogar, ohne die Memory-Kopfschmerzen von C.
+Unsuspecting and actually in a happy relationship with Go, Rust came around the corner. Supposedly the fastest programming language after C (or even just as fast) that you can currently learn. And even without the memory headaches of C.
 
-Das klang interessant. Also baute ich ein kleines Side Project in Rust. Unsere Auszubildende hatte an einem Bundeswettbewerb für Informatik teilgenommen und dort gab es eine interessante Aufgabe, bei der man einen Algorithmus entwickeln musste, der bestimmte Bedingungen erfüllt und die beste Route von Start bis Ziel findet.
-Ich hatte das Ganze schon in Go gebaut und das Programm brauchte für den größten Beispieldatensatz 3 Sekunden.
+That sounded interesting. So I built a little side project in Rust. Our trainee had participated in a national competition for computer science and there was an interesting task, where you had to develop an algorithm, which fulfills certain conditions and finds the best route from start to finish.
+I had already built the whole thing in Go and the program needed 3 seconds for the largest example data set.
 
-Nachdem ich erstmal an Rusts Compiler und seinem Ownership System fast an einer Existenzkrise gescheitert bin, lief nach ein paar Tagen tatsächlich das Programm und es war BLAZINGLY... slow.. Warum? Rust soll doch schneller sein? Nach ewigen pprof analysieren bin ich immer wieder bei der HashMap von Rust gelandet. Aber wie kann denn bitte eine Map so langsam sein? In Go ist sie doch auch schnell? Nach ewigem googlen, hatte ich zwei Meinungen über HashMaps gefunden. "HashMaps sind schnell" und "HashMaps sind langsam". Perfekt und nun? Das Ganze noch nicht richtig verstanden, habe ich einfach alle HashMaps durch Vecs ersetzt und plötzlich war ich um ein vielfaches schneller. Warum? Soweit ich das verstanden habe, funktionieren Go Maps intern genau so. Bei kleinen "Maps", sind die Maps in Wirklichkeit Arrays und werden erst bei großen "Maps" zu "HashMaps". Es ist halt schneller ein komplettes, kleines Array nach einem Key zu suchen, als das über eine HashMap zu lösen.
-Also war das wohl mein Ansatz, den ich in Rust verfolgen musste und blieb bei den Vecs.
+After I almost had an existential crisis because of Rust's compiler and its ownership system, after a few days I actually ran the program and it was BLAZINGLY... slow... Why? Rust is supposed to be faster, right? After eternal pprof analyzing I always ended up with the HashMap of Rust. But how can a map be so slow? In Go it’sfast? After eternal googling, I found two opinions about HashMaps. "HashMaps are fast" and "HashMaps are slow". Perfect and now? Not really understanding the whole thing yet, I just replaced all HashMaps with Vecs and suddenly I was much faster. Why? As far as I understood, Go Maps work internally exactly the same way. For small "maps", the maps are actually arrays and only become "HashMaps" for large "maps". It is just faster to search a complete, small array for a key, than to solve this via a HashMap.
+So I guess that was the approach I had to take in Rust and stayed with the Vecs.
 
---Achtung: Das mit den Maps ist nur eine Theorie. Wer es genauer wissen möchte, kann sich natürlich über Onkel Google nochmal richtig informieren.--
+--Warning: The thing with the maps is only a theory. Who would like to know it more exactly, can inform itself naturally over uncle Google correctly.
 
-Aber trotzdem war das Rust Programm immer noch langsamer als mein Go Programm. Go bei 3 Sekunden, Rust bei 10 Sekunden. Das ist doch doof.
-Habe dann einfach mal `cargo build --release` geschrieben und die Binary ausgeführt. Aufeinmal brauchte Rust nur noch 1.2 Sekunden. Also schneller als Go! Durch Go kannte ich nicht, dass es einen Unterschied in der Performance bei `go run` und `go build` gibt.
-Also wieder was gelernt. Jetzt hatte mich Rust! Es ist schneller als Go! Und nachdem die steile Lernkurve von Rust überstanden war, machte die Programmiersprache sogar richtig Spaß. Die Syntax gefiel einem total. Praktische Funktionen wie `.map()`, `.from()`, `.unwrap_or()`, `.unwrap_or_default()` gingen total ins Blut über. `Result<T,E>` und `Option<T>` sind total schöne Enums. Ach und Mensch, ENUMS! Wie geil sind die bitte in Rust? Aber ich schweife wieder ab.
+But still the Rust program was slower than my Go program. Go at 3 seconds, Rust at 10 seconds. That is stupid.
+I wrote `cargo build --release` and executed the binary. Suddenly Rust needed only 1.2 seconds. So faster than Go! Because of Go I didn't know that there is a difference in performance between `go run` and `go build`.
+So I learned something again. Now Rust had me! It is faster than Go! And after getting over the steep learning curve of Rust, the programming language was actually really fun. The syntax was totally appealing. Practical functions like `.map()`, `.from()`, `.unwrap_or()`, `.unwrap_or_default()` totally fell into place. `Result<T,E>` and `Option<T>` are totally nice enums. Oh and man, ENUMS! How awesome are those in Rust, please? But I'm digressing again.
 
-Also weiter in ein neues Projekt. Ein Produkt von uns, dass Millionen von Datensätze aus einer MongoDB Live lädt, analysiert und aggregiert, wäre doch ein super Beispielprojekt. Vor allem, weil es in PHP wirklich nicht schnell ist.
+So on to a new project. A product of ours that loads, analyzes and aggregates millions of records from a MongoDB live would be a great example project. Especially because it's really not fast in PHP.
 
-Gesagt, getan - COMPILE ERRORS. Wochen habe ich an async in Rust verzweifelt. Nie wollte es wie ich. Vor allem weil "async" in Rust auch nur so halb existiert. Dafür braucht man eine extra Runtime wie `Tokio`.
-Irgendwann lief es irgendwie, aber der Code war grauenvoll und es war auch nicht schnell. Und dank einem Mutex, blockierten irgendwann meine HTTP Requests. Es war die Hölle.
-Also Rust erstmal wieder aufgegeben und lieber zurück auf Go gewechselt.
+No sooner said than done - COMPILE ERRORS. Weeks I despaired on async in Rust. It never worked like I wanted. Especially because "async" exists only half in Rust. For that you need an extra runtime like `Tokio`.
+Eventually it worked somehow, but the code was horrible and it wasn`t fast either. And thanks to a mutex, at some point my HTTP requests were blocked. It was hell.
+So I gave up on Rust and switched back to Go.
 
-Das Produkt habe ich dann erstmal wieder in meiner alten, großen Liebe Go gebaut. Und es ging so schnell, so leicht. Alles war so schön wie früher.
+I built the product in my old, great love Go again. And it went so fast, so easy. Everything was as beautiful as before.
 
-Jedoch immer wieder musste ich an meine Abenteuer mit Rust denken. Das war so wild und man hat sich so herausgefordert gefühlt. Es war nicht alles so einfach, aber wenn es dann funktioniert hat, war die Befriedigung umso Größer. Moment. Irgendwie schweife ich gerade in einen erwachsenen Roman ab.
+But again and again I had to think of my adventures with Rust. It was so wild and you felt so challenged. It wasn't all so easy, but when it worked out, the satisfaction was all the greater. Wait a minute. Somehow I'm digressing into an adult novel right now.
 
-Ich habe mich dann noch mal ein paar Wochen an die Rust Version den Produkts gewagt. Und irgendwann hat es *Klick* gemacht mit dem async und das Projekt lief stabil. Und vor allem performant. Das war wieder ein sehr schöner Moment.
+I then dared to work on the Rust version of the product again for a few weeks. And at some point it *clicked* with the async and the project ran stable. And above all performant. That was again a very nice moment.
 
-Und so ging es dann in meinem Leben weiter. Tagsüber verbrachte ich die Zeit mit Go und Abends habe ich mich immer wieder mit neuen Herausforderungen in Rust ausgetobt.
+And so it went on in my life. During the day I spent my time with Go and in the evenings I was always busy with new challenges in Rust.
 
-## Führe ich eine Polygame Beziehung?
+## Do I Live In A Polygamous Relationship?
 
-Was ich mir im privaten Leben nie vorstellen könnte, ist in der Programmierung schon um einiges schwieriger. Ich liebe Go, Go hat mich zu einem so viel besseren Programmierer gemacht. Ich habe in kurzer Zeit so viel Neues gelernt. Jedoch hat Go mich auch zu Rust geführt und Rust ist einfach ein spannendes Abenteuer, dass mein Programmiererherz immer noch ein Stück höher schlagen lässt als Go.
+What I could never imagine in my private life is a lot more difficult in programming. I love Go, Go has made me such a much better programmer. I have learned so many new things in a short period of time. However, Go has also led me to Rust and Rust is just an exciting adventure that still makes my programmer heartbeat a little faster than Go.
 
-### Was wäre, wenn ich nur noch Monogam programmieren dürfte?
+### What Would Happen If I Were Only Allowed To Program Monogamous?
 
-Die Entscheidung würde mir leicht fallen. So sehr Rust auch immer wieder in Side Projects den Platz vor Go findet, würde meine Entscheidung sofort "Go" lauten. Es kommt natürlich auf den Anwendungsfall an, in dem man programmiert. Da ich jedoch hauptsächlich Web Backends baue, ist Go da einfach das beste Match.
-Mir fällt es so unfassbar leicht in Go ein Projekt aufzusetzen. Egal, ob es ein Web Backend ist oder sonst etwas. Außerdem ist der Einstieg ein vielfaches leichter in Go als in Rust. Also auch aus Arbeitgeber-Sicht ist es viel einfacher einen Programmierer Go beizubringen, als Rust. Ich würde zwar behaupten, dass ich mittlerweile Standard Web Projects in Rust und Go wahrscheinlich gleich schnell bauen kann, weil es für beide Programmiersprachen einfach geniale Open Source Projekte gibt, dennoch liefert Go einfach insgesamt die beste Developer Experience.
+The decision would be easy for me. As much as Rust always finds its place before Go in sideprojects, my decision would immediately be "Go". It depends on the use case you're programming in, of course. However, since I mainly build web backends, Go is simply the best match there.
+I find it so incredibly easy to set up a project in Go. No matter if it's a web backend or anything else. It's also much easier to get started in Go than in Rust. So even from an employer's point of view, it's much easier to teach a programmer Go than Rust. I would say that I can probably build standard web projects in Rust and Go equally fast, because there are great open source projects for both programming languages, but Go delivers the best developer experience.
 
-## Fazit *TRIGGER WARNUNG*
+## Conclusion *TRIGGER WARNING*.
 
-Beide Programmiersprachen werden weiterhin einen Platz in meinem Herzen haben, aber Go bleibt meine große Liebe. Go hat mich zu einem richtigen Mann... ich meine Programmierer gemacht. Mir ganz neue Denkweisen aufgezeigt und neuen Spaß an der Programmierung in meiner Freizeit gebracht. Diese Website ist zwar trotzdem in Rust gebaut, weil das exotische Abenteuer mich zu sehr gereizt hat, aber Go würde ich immer vorziehen, wenn man mir die Pistole auf die Brust hält.
+Both programming languages will continue to have a place in my heart, but Go remains my great love. Go has made me a real man.... I mean programmer. Showed me whole new ways of thinking and brought new fun to programming in my spare time. This website is still built in Rust because the exotic adventure appealed to me too much, but I would always prefer Go if you hold a gun to my chest.
 
-Ich finde es dennoch auch gut, wenn man in der Programmierung mal über den Tellerrand hinaus schaut und neue Programmiersprachen lernt. Dadurch lernt man viel über Strukturen, Datentypen und Performance. Warum ist das Eine besser als das Andere? Die Reise mit Go und Rust hat mich zu einem viel besseren Programmierer gemacht, weil ich die Programmierung und eine Programmiersprache nun besser verstehe und mich schneller in Problemen zurecht finde.
+Still, I also think it's good to think outside the box when it comes to programming and learn new programming languages. This way you learn a lot about structures, data types and performance. Why is one better than the other? The journey with Go and Rust has made me a much better programmer because I now understand programming and a programming language better and can find my way around problems faster.
 
-Abschließende triggernde Worte: Im Backend sehe ich keine Existenzberechtigung für andere Programmiersprachen als Rust und Go. Rust erfüllt die besten low level Aufgaben und Go die besten High Level Aufgaben. Kein Mensch braucht mehr C oder Java. Über diese "Programmiersprachen" Python und JavaScript brauchen wir erst gar nicht anfangen zu sprechen. Und gab es sonst überhaupt noch Programmiersprachen?
+Final triggering words: On the backend, I see no raison d'être for programming languages other than Rust and Go. Rust does the best low level tasks and Go does the best high level tasks. Nobody needs C or Java anymore. We don't even need to start talking about those "programming languages" Python and JavaScript. And were there any other programming languages at all?
 
-Und nachdem ich damit erfolgreich über 90% der IT Leute getriggert, wünsche ich dir trotzdem einen schönen Tag!
-
-
+And after I successfully triggered over 90% of IT people with this, I wish you a nice day anyway!

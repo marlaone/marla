@@ -1184,6 +1184,7 @@ dependencies = [
  "marla_core",
  "marla_markdown",
  "path-clean",
+ "regex",
  "reqwest",
  "serde",
  "serde_json",
