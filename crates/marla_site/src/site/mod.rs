@@ -2,8 +2,7 @@ use tera::Value;
 
 use crate::{
     data::get_site_data,
-    page::Page,
-    services::page::{fetch_page, fetch_pages},
+    page::{index::PageIndex, Page},
 };
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -16,26 +15,21 @@ pub struct Site {
 }
 
 impl Site {
-    pub async fn from_content_path(
-        content_path: String,
+    pub async fn from_uri_path(
+        uri_path: String,
         lang_tag: Option<&String>,
     ) -> Result<Site, Box<dyn std::error::Error>> {
-        let potential_page = fetch_page(&content_path, lang_tag);
-
-        let mut page = None;
-        match potential_page {
-            Some(found_page) => page = Some(found_page),
-            None => {}
-        };
-
-        let pages = fetch_pages(None, lang_tag);
+        let mut page_index = PageIndex::new();
+        page_index.parse()?;
 
         let data = get_site_data()?;
 
         Ok(Site {
-            path: content_path,
-            page,
-            pages,
+            page: page_index
+                .page_by_uri_path(&uri_path, lang_tag)
+                .map(|p| p.to_owned()),
+            path: uri_path,
+            pages: page_index.pages,
             data,
             lang: lang_tag.map(|lt| lt.to_owned()),
         })

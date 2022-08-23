@@ -1,13 +1,17 @@
+use std::path::PathBuf;
+
 use chrono::{DateTime, Utc};
 
 use self::meta::PageMeta;
 
+pub mod index;
 pub mod markdown;
 pub mod meta;
 
 #[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
 pub struct Page {
     pub path: String,
+    pub content_path: PathBuf,
     pub meta: Option<PageMeta>,
     pub content: String,
     pub plain: String,
@@ -15,4 +19,5 @@ pub struct Page {
     pub created_at: DateTime<Utc>,
     pub params: toml::value::Table,
     pub words: usize,
+    pub lang: Option<String>,
 }

@@ -111,10 +111,10 @@ fn serve_static_files(req: &HttpRequest) -> Result<Option<HttpResponse>, PageErr
 
 async fn serve_html_template(
     theme: web::Data<Mutex<Theme>>,
-    lang_tag: Option<&String>,
     site: &Site,
 ) -> Result<Option<HttpResponse>, PageError> {
-    let content_path = path_to_content_path(&site.path, lang_tag, Some(".html".to_string()));
+    let content_path =
+        path_to_content_path(&site.path, site.lang.as_ref(), Some(".html".to_string()));
 
     return Ok(if content_path.exists() {
         Some(
@@ -160,11 +160,11 @@ pub async fn page(
         None => None,
     };
 
-    let site = Site::from_content_path(req.uri().path().to_string(), lang_tag.as_ref())
+    let site = Site::from_uri_path(req.uri().path().to_string(), lang_tag.as_ref())
         .await
         .map_err(|e| PageError::SiteError { msg: e.to_string() })?;
 
-    match serve_html_template(theme.clone(), lang_tag.as_ref(), &site).await? {
+    match serve_html_template(theme.clone(), &site).await? {
         Some(res) => return Ok(res),
         None => (),
     }

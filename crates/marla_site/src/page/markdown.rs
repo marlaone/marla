@@ -2,8 +2,7 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 use chrono::DateTime;
-use glob::glob;
-use log::error;
+use lazy_static::lazy_static;
 use marla_core::config::site_content_path;
 use marla_markdown::{frontmatter::parse, load_markdown, markdown_to_html, strip};
 use regex::Regex;
@@ -12,6 +11,13 @@ use voca_rs::Voca;
 use crate::{services::page::get_page_path, utils::clean_path};
 
 use super::{meta::PageMeta, Page};
+
+lazy_static! {
+    static ref LANG_RE: Regex = Regex::new(r"(\.(?P<l>[a-zA-Z]+))\.(md|html)$").unwrap();
+    static ref INDEX_RE: Regex = Regex::new(r"^(?P<p>.*/)?index$").unwrap();
+    static ref FILE_PATH_RE: Regex =
+        Regex::new(r"(?P<p>[a-zA-Z0-9+_\-/]+)(?:\.([a-zA-Z]+))?\.(md|html)$").unwrap();
+}
 
 pub fn path_to_content_path(
     path: &String,
@@ -67,9 +73,13 @@ pub fn content_path_to_url_path(path: &PathBuf) -> String {
         .replace(&contents_path.as_str()[1..], "")
         .replace(&contents_path.as_str()[2..], "");
 
-    let re = Regex::new(r"^(?P<p>.*/)?index\.([a-zA-Z]+\.)?(md|html)").unwrap();
-    let page_path = re
-        .replace(&page_path, "$p")
+    let mut cleaned_page_path = "".to_owned();
+    for cap in FILE_PATH_RE.captures_iter(&page_path) {
+        cleaned_page_path = cap["p"].to_string();
+    }
+
+    let page_path = INDEX_RE
+        .replace(&cleaned_page_path, "$p")
         .to_string()
         .replace(".md", "")
         .replace(".html", "");
@@ -94,6 +104,13 @@ pub fn content_path_to_url_path(path: &PathBuf) -> String {
     }
 }
 
+fn get_content_language_by_path(path: &PathBuf) -> Option<String> {
+    for caps in LANG_RE.captures_iter(path.to_str().unwrap_or_default()) {
+        return Some(caps["l"].to_string());
+    }
+    return None;
+}
+
 pub fn markdown_to_page(path: PathBuf) -> Result<Page> {
     let file_metadata = std::fs::metadata(&path)?;
 
@@ -106,6 +123,8 @@ pub fn markdown_to_page(path: PathBuf) -> Result<Page> {
 
     let page = Page {
         path: content_path_to_url_path(&path),
+        lang: get_content_language_by_path(&path),
+        content_path: path,
         meta: Some(PageMeta {
             title: match markdown.params.get("title") {
                 Some(title_param) => match title_param.as_str() {
@@ -143,30 +162,4 @@ pub fn markdown_to_page(path: PathBuf) -> Result<Page> {
     };
 
     return Ok(page);
-}
-
-pub fn get_pages(sub_path: Option<String>, lang_tag: Option<&String>) -> Result<Vec<Page>> {
-    let mut pages = Vec::new();
-
-    for &ext in ["md", "html"].iter() {
-        let mut contents_path = site_content_path();
-
-        if sub_path.is_some() {
-            contents_path.push_str(sub_path.as_ref().unwrap().as_str());
-        }
-
-        contents_path.push_str("/**/*.");
-        contents_path.push_str(ext);
-
-        for content_entry in glob(&contents_path)? {
-            match content_entry {
-                Ok(page_path) => pages.push(markdown_to_page(get_page_path(page_path, lang_tag))?),
-                Err(e) => error!("{:?}", e),
-            }
-        }
-    }
-
-    pages.sort_by(|a, b| a.path.partial_cmp(&b.path).unwrap());
-
-    Ok(pages)
 }

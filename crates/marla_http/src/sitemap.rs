@@ -5,7 +5,7 @@ use actix_web::{
 };
 use anyhow::Result;
 use derive_more::{Display, Error};
-use marla_site::services::page::fetch_pages;
+use marla_site::page::index::PageIndex;
 use sitemap::{structs::UrlEntry, writer::SiteMapWriter};
 
 #[derive(Debug, Display, Error)]
@@ -35,7 +35,8 @@ impl error::ResponseError for SitemapError {
 
 #[get("/sitemap.xml")]
 pub async fn sitemap_route(req: HttpRequest) -> Result<impl Responder, SitemapError> {
-    let pages = fetch_pages(None, None);
+    let page_index = PageIndex::create_and_parse()
+        .map_err(|e| SitemapError::QueryError { msg: e.to_string() })?;
 
     let mut sitemap_output = Vec::<u8>::new();
     let sitemap_writer = SiteMapWriter::new(&mut sitemap_output);
@@ -43,17 +44,31 @@ pub async fn sitemap_route(req: HttpRequest) -> Result<impl Responder, SitemapEr
         .start_urlset()
         .expect("can't write the buffer");
 
-    for page in pages.iter() {
+    let mut page_paths = page_index
+        .pages
+        .iter()
+        .map(|p| p.path.clone())
+        .collect::<Vec<String>>();
+    page_paths.sort();
+    page_paths.dedup();
+
+    for page_path in page_paths {
         let url_entry = UrlEntry::builder()
             .loc(
-                req.url_for("page", &[&page.path[1..]])
+                req.url_for("page", &[&page_path[1..]])
                     .map_err(|e| SitemapError::EntryError { msg: e.to_string() })?
                     .as_str()
                     .replace("http:", "https:"),
             )
             .changefreq(sitemap::structs::ChangeFreq::Monthly)
             .priority(0.5)
-            .lastmod(page.last_modified_at.into())
+            .lastmod(
+                page_index
+                    .page_by_uri_path(&page_path, None)
+                    .unwrap()
+                    .last_modified_at
+                    .into(),
+            )
             .build()
             .map_err(|e| SitemapError::EntryError { msg: e.to_string() })?;
 
