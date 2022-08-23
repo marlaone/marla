@@ -9,6 +9,7 @@ async fn main() -> std::io::Result<()> {
     setup_logger();
 
     serve_http_server(&http_host(), http_port())
+        .await
         .unwrap()
         .await?;
 

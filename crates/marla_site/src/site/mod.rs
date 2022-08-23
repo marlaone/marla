@@ -1,3 +1,5 @@
+use tokio::sync::RwLockReadGuard;
+
 use tera::Value;
 
 use crate::{
@@ -5,7 +7,7 @@ use crate::{
     page::{index::PageIndex, Page},
 };
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct Site {
     pub path: String,
     pub page: Option<Page>,
@@ -16,12 +18,10 @@ pub struct Site {
 
 impl Site {
     pub async fn from_uri_path(
+        page_index: RwLockReadGuard<'_, PageIndex>,
         uri_path: String,
         lang_tag: Option<&String>,
     ) -> Result<Site, Box<dyn std::error::Error>> {
-        let mut page_index = PageIndex::new();
-        page_index.parse()?;
-
         let data = get_site_data()?;
 
         Ok(Site {
@@ -29,7 +29,7 @@ impl Site {
                 .page_by_uri_path(&uri_path, lang_tag)
                 .map(|p| p.to_owned()),
             path: uri_path,
-            pages: page_index.pages,
+            pages: page_index.pages.clone(),
             data,
             lang: lang_tag.map(|lt| lt.to_owned()),
         })

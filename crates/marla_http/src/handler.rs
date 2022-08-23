@@ -16,11 +16,11 @@ use actix_web::{
 use derive_more::{Display, Error};
 use marla_core::config::site_output_path;
 use marla_site::{
-    page::markdown::path_to_content_path,
+    page::{index::PageIndex, markdown::path_to_content_path},
     site::Site,
     theme::{get_theme_path, Theme},
 };
-use tokio::sync::Mutex;
+use tokio::sync::{Mutex, RwLock};
 
 #[derive(Debug, Display, Error)]
 pub enum PageError {
@@ -137,6 +137,7 @@ async fn serve_html_template(
 pub async fn page(
     req: HttpRequest,
     theme: web::Data<Mutex<Theme>>,
+    page_index: web::Data<RwLock<PageIndex>>,
 ) -> Result<impl Responder, PageError> {
     match serve_static_files(&req)? {
         Some(res) => return Ok(res),
@@ -160,9 +161,13 @@ pub async fn page(
         None => None,
     };
 
-    let site = Site::from_uri_path(req.uri().path().to_string(), lang_tag.as_ref())
-        .await
-        .map_err(|e| PageError::SiteError { msg: e.to_string() })?;
+    let site = Site::from_uri_path(
+        page_index.read().await,
+        req.uri().path().to_string(),
+        lang_tag.as_ref(),
+    )
+    .await
+    .map_err(|e| PageError::SiteError { msg: e.to_string() })?;
 
     match serve_html_template(theme.clone(), &site).await? {
         Some(res) => return Ok(res),
