@@ -1,7 +1,4 @@
-use std::{
-    path::{Path, PathBuf},
-    sync::RwLock,
-};
+use std::{path::Path, sync::RwLock};
 
 use config::Config;
 use home::home_dir;
@@ -16,17 +13,41 @@ lazy_static! {
                 )
                 .required(false)
             )
-            .add_source(config::File::from(PathBuf::from("./site/config.yml")).required(false))
+            .add_source(
+                config::File::from(std::env::current_dir().unwrap().join("./site/config.yml"))
+                    .required(false)
+            )
             .add_source(config::Environment::with_prefix("MARLA"))
-            .set_default("site.content", "./site/content/")
+            .set_default(
+                "site.content",
+                std::env::current_dir()
+                    .unwrap()
+                    .join("./site/content/")
+                    .to_str()
+                    .to_owned()
+            )
             .unwrap()
-            .set_default("site.data", "./site/data/")
+            .set_default(
+                "site.data",
+                std::env::current_dir()
+                    .unwrap()
+                    .join("./site/data/")
+                    .to_str()
+                    .to_owned()
+            )
             .unwrap()
             .set_default("http.host", "localhost")
             .unwrap()
             .set_default::<&str, u16>("http.port", 1809)
             .unwrap()
-            .set_default("site.theme", "./site/themes/marla/")
+            .set_default(
+                "site.theme",
+                std::env::current_dir()
+                    .unwrap()
+                    .join("./site/themes/marla/")
+                    .to_str()
+                    .to_owned()
+            )
             .unwrap()
             .build()
             .unwrap()
