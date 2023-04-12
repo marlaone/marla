@@ -17,12 +17,10 @@ erDiagram
     string[] aliases
     string template "default('page.html')"
     string[] authors
-    PageMeta meta ""
     bool draft "default(false)"
     map extra
     string lang
   }
-  Page ||--o{ PageMeta: has
   PageCollection }o--o| Page: has
   PageCollection {
     Page[] pages "required, min_len(0)"

@@ -5,3 +5,9 @@ use super::page::Page;
 pub struct PageCollection {
     pub pages: Vec<Page>,
 }
+
+impl PageCollection {
+    pub fn new() -> Self {
+        Self { pages: vec![] }
+    }
+}
