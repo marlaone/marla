@@ -24,5 +24,5 @@ type Page struct {
 	Authors        []string
 	IsDraft        bool
 	Extra          map[string]any
-	Language       string
+	Language       fields.RequiredString
 }

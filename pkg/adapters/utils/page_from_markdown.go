@@ -4,6 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"net/url"
+	"path/filepath"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/marlaone/marla/pkg/core/entities"
@@ -23,6 +27,8 @@ var md = goldmark.New(
 
 var mdRenderer = goldmark.DefaultRenderer()
 
+var languageFileRegex = regexp.MustCompile(`\.(?P<Lang>[A-Za-z+-]+)$`)
+
 type pageMeta struct {
 	Title        string         `yaml:"title"`
 	Description  string         `yaml:"description"`
@@ -38,9 +44,29 @@ type pageMeta struct {
 	Extra        map[string]any `yaml:"extra"`
 }
 
-func PageFromMarkdownFile(config *entities.Config, path fields.Path) (entities.Page, error) {
-	p := entities.Page{}
+func PageFromMarkdownFile(config *entities.Config, path fields.Path) (*entities.Page, error) {
+	p := &entities.Page{}
 	p.ContentPath = path
+	p.Language = config.DefaultLangauge
+
+	uriPath, err := filepath.Rel(config.ContentPath.String(), path.String())
+	if err != nil {
+		return p, fmt.Errorf("could not get relative path: %w", err)
+	}
+	if !strings.HasPrefix(uriPath, "/") {
+		uriPath = "/" + uriPath
+	}
+	uriPath = strings.TrimSuffix(uriPath, ".md")
+	uriPath = strings.TrimSuffix(uriPath, "/index")
+
+	langMatches := languageFileRegex.FindStringSubmatch(uriPath)
+
+	if len(langMatches) > 1 {
+		p.Language = fields.MustRequiredStringFromString(langMatches[1])
+		uriPath = strings.TrimSuffix(uriPath, "."+langMatches[1])
+	}
+
+	p.Path = url.URL{Path: uriPath, OmitHost: true}
 
 	f, err := p.ContentPath.File()
 	if err != nil {
@@ -77,12 +103,12 @@ func PageFromMarkdownFile(config *entities.Config, path fields.Path) (entities.P
 	}
 
 	if meta.Title == "" {
-		extractH1Text(doc)
+		meta.Title = extractH1Text(doc, p.PlainContent)
 	}
 
 	title, err := fields.RequiredStringFromString(meta.Title)
 	if err != nil {
-		return p, fmt.Errorf("could not create page title field: %w", err)
+		return p, fmt.Errorf("missing title for page, either `title: \"example\"` or a level 1 heading are required: %w", err)
 	}
 
 	createdAt, err := fields.TimeFromString(meta.Date)
@@ -118,7 +144,7 @@ func PageFromMarkdownFile(config *entities.Config, path fields.Path) (entities.P
 }
 
 type H1TextExtractor struct {
-	text string
+	Segment text.Segment
 }
 
 func (h *H1TextExtractor) Visit(node ast.Node, entering bool) ast.WalkStatus {
@@ -126,18 +152,18 @@ func (h *H1TextExtractor) Visit(node ast.Node, entering bool) ast.WalkStatus {
 		return ast.WalkContinue
 	}
 	if heading, ok := node.(*ast.Heading); ok && heading.Level == 1 {
-		fmt.Println(heading.Lines().At(0))
-		// @TODO: https://github.com/yuin/goldmark/search?q=Segment
-		fmt.Println("found h1")
+		h.Segment = heading.Lines().At(0)
 		return ast.WalkStop
 	}
 	return ast.WalkContinue
 }
 
-func extractH1Text(n ast.Node) string {
+func extractH1Text(n ast.Node, contentPlain []byte) string {
 	extractor := &H1TextExtractor{}
 	ast.Walk(n, func(n ast.Node, entering bool) (ast.WalkStatus, error) {
 		return extractor.Visit(n, entering), nil
 	})
-	return extractor.text
+
+	content := string(contentPlain)
+	return content[extractor.Segment.Start:extractor.Segment.Stop]
 }
