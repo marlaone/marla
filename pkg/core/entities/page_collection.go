@@ -1,7 +1,6 @@
 package entities
 
 import (
-	"fmt"
 	"net/url"
 
 	"github.com/marlaone/marla/pkg/core/fields"
@@ -45,9 +44,7 @@ func (pc *PageCollection) GetPageByURLAndLanguage(url *url.URL, language fields.
 	if uri == "" {
 		uri = "/"
 	}
-	fmt.Println(uri, language)
 	for _, page := range pc.pages {
-		fmt.Println(page.Path, page.Language)
 		if page.Path.Path == uri && page.Language == language {
 			return page
 		}

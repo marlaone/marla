@@ -11,4 +11,5 @@ type ThemeRenderer func(site *entities.Site, w io.Writer) error
 type ThemePort interface {
 	IndexRenderer() ThemeRenderer
 	PageRenderer() ThemeRenderer
+	AddTemplateVariable(name string, value any)
 }

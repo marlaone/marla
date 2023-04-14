@@ -59,6 +59,10 @@ func PageFromMarkdownFile(config *entities.Config, path fields.Path) (*entities.
 	uriPath = strings.TrimSuffix(uriPath, ".md")
 	uriPath = strings.TrimSuffix(uriPath, "/index")
 
+	if uriPath == "" {
+		uriPath = "/"
+	}
+
 	langMatches := languageFileRegex.FindStringSubmatch(uriPath)
 
 	if len(langMatches) > 1 {

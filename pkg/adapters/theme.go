@@ -11,37 +11,49 @@ import (
 )
 
 type ThemeAdapter struct {
-	config *entities.Config
+	config          *entities.Config
+	globalVariables map[string]any
 }
 
 var _ ports.ThemePort = &ThemeAdapter{}
 
-func NewMarlaThemeAdapter(config *entities.Config) *ThemeAdapter {
-	return &ThemeAdapter{
-		config: config,
-	}
-}
-
-func (a *ThemeAdapter) IndexRenderer() ports.ThemeRenderer {
+func init() {
 	pongo2.RegisterFilter("truncate", func(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
 		return pongo2.AsValue(in.String()[:param.Integer()]), nil
 	})
+}
 
+func NewThemeAdapter(config *entities.Config) *ThemeAdapter {
+	return &ThemeAdapter{
+		config:          config,
+		globalVariables: make(map[string]any),
+	}
+}
+
+func (a *ThemeAdapter) AddTemplateVariable(name string, value any) {
+	a.globalVariables[name] = value
+}
+
+func (a *ThemeAdapter) IndexRenderer() ports.ThemeRenderer {
 	return ports.ThemeRenderer(func(site *entities.Site, w io.Writer) error {
 		tpl, err := pongo2.FromFile(filepath.Join(a.config.ThemePath.String(), "templates", "index.html"))
 		if err != nil {
 			return fmt.Errorf("could not load index template: %w", err)
 		}
-		out, err := tpl.Execute(pongo2.Context{
+		ctx := pongo2.Context{
 			"site": site,
 			"bytes_to_string": func(b []byte) string {
 				return string(b)
 			},
-		})
+		}
+		for k, v := range a.globalVariables {
+			ctx[k] = v
+		}
+		out, err := tpl.ExecuteBytes(ctx)
 		if err != nil {
 			return fmt.Errorf("could not execute index template: %w", err)
 		}
-		w.Write([]byte(out))
+		w.Write(out)
 		return nil
 	})
 }
