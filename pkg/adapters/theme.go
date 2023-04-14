@@ -3,7 +3,9 @@ package adapters
 import (
 	"fmt"
 	"io"
+	"net/url"
 	"path/filepath"
+	"strings"
 
 	"github.com/flosch/pongo2/v6"
 	"github.com/marlaone/marla/pkg/core/entities"
@@ -30,6 +32,44 @@ func NewThemeAdapter(config *entities.Config) *ThemeAdapter {
 	}
 }
 
+func (a *ThemeAdapter) getPongoContext(site *entities.Site) pongo2.Context {
+	ctx := pongo2.Context{
+		"site": site,
+		"bytes_to_string": func(b []byte) string {
+			return string(b)
+		},
+		"get_path": func(u url.URL) string {
+			return u.String()
+		},
+		"get_subpages": func(page *entities.Page) []*entities.Page {
+			subpages := []*entities.Page{}
+			for _, p := range site.Pages {
+				if !strings.HasPrefix(p.Path.Path, page.Path.Path) {
+					continue
+				}
+				pPath := strings.TrimPrefix(p.Path.Path, page.Path.Path)
+				if pPath != "" && strings.Count(pPath, "/") == 1 {
+					subpages = append(subpages, p)
+				}
+			}
+			return subpages
+		},
+		"get_rootpages": func() []*entities.Page {
+			rootpages := []*entities.Page{}
+			for _, p := range site.Pages {
+				if strings.Count(p.Path.Path, "/") == 1 {
+					rootpages = append(rootpages, p)
+				}
+			}
+			return rootpages
+		},
+	}
+	for k, v := range a.globalVariables {
+		ctx[k] = v
+	}
+	return ctx
+}
+
 func (a *ThemeAdapter) AddTemplateVariable(name string, value any) {
 	a.globalVariables[name] = value
 }
@@ -40,16 +80,7 @@ func (a *ThemeAdapter) IndexRenderer() ports.ThemeRenderer {
 		if err != nil {
 			return fmt.Errorf("could not load index template: %w", err)
 		}
-		ctx := pongo2.Context{
-			"site": site,
-			"bytes_to_string": func(b []byte) string {
-				return string(b)
-			},
-		}
-		for k, v := range a.globalVariables {
-			ctx[k] = v
-		}
-		out, err := tpl.ExecuteBytes(ctx)
+		out, err := tpl.ExecuteBytes(a.getPongoContext(site))
 		if err != nil {
 			return fmt.Errorf("could not execute index template: %w", err)
 		}
@@ -64,12 +95,9 @@ func (a *ThemeAdapter) PageRenderer() ports.ThemeRenderer {
 		if err != nil {
 			return fmt.Errorf("could not load page template: %w", err)
 		}
-		out, err := tpl.Execute(pongo2.Context{
-			"site": site,
-			"bytes_to_string": func(b []byte) string {
-				return string(b)
-			},
-		})
+
+		out, err := tpl.Execute(a.getPongoContext(site))
+
 		if err != nil {
 			return fmt.Errorf("could not execute page template: %w", err)
 		}
