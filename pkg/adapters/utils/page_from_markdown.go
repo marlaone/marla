@@ -70,7 +70,7 @@ func PageFromMarkdownFile(config *entities.Config, path fields.Path) (*entities.
 		uriPath = strings.TrimSuffix(uriPath, "."+langMatches[1])
 	}
 
-	p.Path = url.URL{Path: uriPath, OmitHost: true}
+	p.Path = &url.URL{Path: uriPath, OmitHost: true}
 
 	f, err := p.ContentPath.File()
 	if err != nil {

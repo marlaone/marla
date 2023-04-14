@@ -38,7 +38,7 @@ func (a *ThemeAdapter) getPongoContext(site *entities.Site) pongo2.Context {
 		"bytes_to_string": func(b []byte) string {
 			return string(b)
 		},
-		"get_path": func(u url.URL) string {
+		"get_path": func(u *url.URL) string {
 			return u.String()
 		},
 		"get_subpages": func(page *entities.Page) []*entities.Page {
@@ -62,6 +62,12 @@ func (a *ThemeAdapter) getPongoContext(site *entities.Site) pongo2.Context {
 				}
 			}
 			return rootpages
+		},
+		"is_active": func(pagePath string, exact bool) bool {
+			if exact {
+				return site.Path.Path == pagePath
+			}
+			return strings.HasPrefix(site.Path.Path, pagePath)
 		},
 	}
 	for k, v := range a.globalVariables {

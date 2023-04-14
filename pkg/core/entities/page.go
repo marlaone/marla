@@ -9,7 +9,7 @@ import (
 
 type Page struct {
 	Title          fields.RequiredString
-	Path           url.URL
+	Path           *url.URL
 	ContentPath    fields.Path
 	Content        []byte
 	PlainContent   []byte
