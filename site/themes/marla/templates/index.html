@@ -1,4 +1,4 @@
 {% extends "layout.html" %}
 {% block content %}
-    {{ site.page.content | safe }}
+    {{ bytes_to_string(site.Page.Content) | safe }}
 {% endblock content %}
