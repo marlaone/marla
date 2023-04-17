@@ -21,7 +21,7 @@ type Server struct {
 
 func NewServer(config *entities.Config, app *core.Application) *Server {
 	return &Server{
-		fiberapp: fiber.New(),
+		fiberapp: fiber.New(fiber.Config{Prefork: true}),
 		config:   config,
 		app:      app,
 	}
@@ -50,7 +50,7 @@ func (s *Server) CreateDefaultRouter() error {
 			}
 
 			c.Context().SetContentType("text/html; charset=utf-8")
-			if err := app.ThemeService().RenderIndexPage(site, c); err != nil {
+			if err := app.ThemeService().RenderPage(site, c); err != nil {
 				return err
 			}
 

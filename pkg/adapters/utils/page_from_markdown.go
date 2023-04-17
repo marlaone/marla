@@ -127,9 +127,22 @@ func PageFromMarkdownFile(config *entities.Config, path fields.Path) (*entities.
 
 	templatePath, err := fields.PathFromString(meta.Template)
 	if err != nil {
-		templatePath, err = config.ThemePath.Join("templates", "page.html")
-		if err != nil {
-			return p, fmt.Errorf("could not create page template field: %w", err)
+		if meta.Template != "" {
+			// if the template is not empty, search for it in the theme
+			templatePath, err = config.ThemePath.Join("templates", meta.Template)
+			if err != nil {
+				// otherwise, use the default page template
+				templatePath, err = config.ThemePath.Join("templates", "page.html")
+				if err != nil {
+					return p, fmt.Errorf("could not create page template field: %w", err)
+				}
+			}
+		} else {
+			// if the template is invalid or empty, use the default page template
+			templatePath, err = config.ThemePath.Join("templates", "page.html")
+			if err != nil {
+				return p, fmt.Errorf("could not create page template field: %w", err)
+			}
 		}
 	}
 

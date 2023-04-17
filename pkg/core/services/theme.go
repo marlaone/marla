@@ -9,31 +9,25 @@ import (
 )
 
 type ThemeService struct {
-	adapter       ports.ThemePort
-	indexRenderer ports.ThemeRenderer
-	pageRenderer  ports.ThemeRenderer
+	adapter          ports.ThemePort
+	templateRenderer ports.ThemeRenderer
 }
 
 func NewThemeService(adapter ports.ThemePort) *ThemeService {
 	return &ThemeService{
-		adapter:       adapter,
-		indexRenderer: adapter.IndexRenderer(),
-		pageRenderer:  adapter.PageRenderer(),
+		adapter:          adapter,
+		templateRenderer: adapter.TemplateRenderer(),
 	}
-}
-
-func (s *ThemeService) RenderIndexPage(site *entities.Site, w io.Writer) error {
-	err := s.indexRenderer(site, w)
-	if err != nil {
-		return fmt.Errorf("[ThemeService.RenderIndexPage] %w", err)
-	}
-	return nil
 }
 
 func (s *ThemeService) RenderPage(site *entities.Site, w io.Writer) error {
-	err := s.pageRenderer(site, w)
+	err := s.templateRenderer(site, w)
 	if err != nil {
 		return fmt.Errorf("[ThemeService.RenderPage] %w", err)
 	}
 	return nil
+}
+
+func (a *ThemeService) WatchTemplates() {
+	a.adapter.WatchTemplates()
 }

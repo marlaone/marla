@@ -61,6 +61,7 @@ func StartDefaultApplication() error {
 	}
 
 	go app.PageCollectionService().Watch()
+	go app.ThemeService().WatchTemplates()
 
 	srv := server.NewServer(config, app)
 

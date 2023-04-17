@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"io"
 	"net/url"
-	"path/filepath"
+	"os"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/flosch/pongo2/v6"
 	"github.com/marlaone/marla/pkg/core/entities"
@@ -13,8 +15,10 @@ import (
 )
 
 type ThemeAdapter struct {
+	mutex           *sync.Mutex
 	config          *entities.Config
 	globalVariables map[string]any
+	knownTemplates  map[string]time.Time
 }
 
 var _ ports.ThemePort = &ThemeAdapter{}
@@ -27,8 +31,10 @@ func init() {
 
 func NewThemeAdapter(config *entities.Config) *ThemeAdapter {
 	return &ThemeAdapter{
+		mutex:           &sync.Mutex{},
 		config:          config,
 		globalVariables: make(map[string]any),
+		knownTemplates:  make(map[string]time.Time),
 	}
 }
 
@@ -80,34 +86,54 @@ func (a *ThemeAdapter) AddTemplateVariable(name string, value any) {
 	a.globalVariables[name] = value
 }
 
-func (a *ThemeAdapter) IndexRenderer() ports.ThemeRenderer {
+func (a *ThemeAdapter) TemplateRenderer() ports.ThemeRenderer {
 	return ports.ThemeRenderer(func(site *entities.Site, w io.Writer) error {
-		tpl, err := pongo2.FromFile(filepath.Join(a.config.ThemePath.String(), "templates", "index.html"))
+		if site.Page == nil {
+			return fmt.Errorf("no page to render")
+		}
+		templatePath := site.Page.Template.String()
+		if templatePath == "" {
+			return fmt.Errorf("no template to render")
+		}
+
+		a.mutex.Lock()
+		if _, ok := a.knownTemplates[templatePath]; !ok {
+			if info, err := os.Stat(templatePath); err == nil {
+				a.knownTemplates[templatePath] = info.ModTime()
+			}
+		}
+		a.mutex.Unlock()
+
+		tpl, err := pongo2.FromCache(templatePath)
 		if err != nil {
-			return fmt.Errorf("could not load index template: %w", err)
+			return fmt.Errorf("could not load template: %w", err)
 		}
 		out, err := tpl.ExecuteBytes(a.getPongoContext(site))
 		if err != nil {
-			return fmt.Errorf("could not execute index template: %w", err)
+			return fmt.Errorf("could not execute template: %w", err)
 		}
 		w.Write(out)
 		return nil
 	})
 }
 
-func (a *ThemeAdapter) PageRenderer() ports.ThemeRenderer {
-	return ports.ThemeRenderer(func(site *entities.Site, w io.Writer) error {
-		tpl, err := pongo2.FromFile(filepath.Join(a.config.ThemePath.String(), "templates", "page.html"))
-		if err != nil {
-			return fmt.Errorf("could not load page template: %w", err)
-		}
+func (a *ThemeAdapter) WatchTemplates() {
 
-		out, err := tpl.Execute(a.getPongoContext(site))
-
-		if err != nil {
-			return fmt.Errorf("could not execute page template: %w", err)
+	ticker := time.NewTicker(5 * time.Second)
+	for {
+		select {
+		case <-ticker.C:
+			a.mutex.Lock()
+			for templatePath, lastModTime := range a.knownTemplates {
+				if info, err := os.Stat(templatePath); err == nil {
+					if info.ModTime().After(lastModTime) {
+						pongo2.DefaultSet.CleanCache(templatePath)
+						a.knownTemplates[templatePath] = info.ModTime()
+					}
+				}
+			}
+			a.mutex.Unlock()
 		}
-		w.Write([]byte(out))
-		return nil
-	})
+	}
+
 }
