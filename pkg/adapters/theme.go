@@ -25,7 +25,10 @@ var _ ports.ThemePort = &ThemeAdapter{}
 
 func init() {
 	pongo2.RegisterFilter("truncate", func(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
-		return pongo2.AsValue(in.String()[:param.Integer()]), nil
+		if (in.String() != "") && (param.Integer() > 0) && (param.Integer() < len(in.String())) {
+			return pongo2.AsValue(in.String()[:param.Integer()]), nil
+		}
+		return in, nil
 	})
 }
 
@@ -96,15 +99,32 @@ func (a *ThemeAdapter) TemplateRenderer() ports.ThemeRenderer {
 			return fmt.Errorf("no template to render")
 		}
 
-		a.mutex.Lock()
-		if _, ok := a.knownTemplates[templatePath]; !ok {
-			if info, err := os.Stat(templatePath); err == nil {
-				a.knownTemplates[templatePath] = info.ModTime()
-			}
-		}
-		a.mutex.Unlock()
+		a.touchTemplate(templatePath)
 
 		tpl, err := pongo2.FromCache(templatePath)
+		if err != nil {
+			return fmt.Errorf("could not load template: %w", err)
+		}
+		out, err := tpl.ExecuteBytes(a.getPongoContext(site))
+		if err != nil {
+			return fmt.Errorf("could not execute template: %w", err)
+		}
+		w.Write(out)
+		return nil
+	})
+}
+
+func (a *ThemeAdapter) NotFoundRenderer() ports.ThemeRenderer {
+	return ports.ThemeRenderer(func(site *entities.Site, w io.Writer) error {
+
+		templatePath, err := a.config.ThemePath.Join("templates", "404.html")
+		if err != nil {
+			return nil
+		}
+
+		a.touchTemplate(templatePath.String())
+
+		tpl, err := pongo2.FromCache(templatePath.String())
 		if err != nil {
 			return fmt.Errorf("could not load template: %w", err)
 		}
@@ -135,5 +155,14 @@ func (a *ThemeAdapter) WatchTemplates() {
 			a.mutex.Unlock()
 		}
 	}
+}
 
+func (a *ThemeAdapter) touchTemplate(templatePath string) {
+	a.mutex.Lock()
+	if _, ok := a.knownTemplates[templatePath]; !ok {
+		if info, err := os.Stat(templatePath); err == nil {
+			a.knownTemplates[templatePath] = info.ModTime()
+		}
+	}
+	a.mutex.Unlock()
 }

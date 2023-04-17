@@ -28,6 +28,14 @@ func (s *ThemeService) RenderPage(site *entities.Site, w io.Writer) error {
 	return nil
 }
 
+func (s *ThemeService) RenderNotFound(site *entities.Site, w io.Writer) error {
+	err := s.adapter.NotFoundRenderer()(site, w)
+	if err != nil {
+		return fmt.Errorf("[ThemeService.RenderNotFound] %w", err)
+	}
+	return nil
+}
+
 func (a *ThemeService) WatchTemplates() {
 	a.adapter.WatchTemplates()
 }

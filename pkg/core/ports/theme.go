@@ -10,6 +10,7 @@ type ThemeRenderer func(site *entities.Site, w io.Writer) error
 
 type ThemePort interface {
 	TemplateRenderer() ThemeRenderer
+	NotFoundRenderer() ThemeRenderer
 	WatchTemplates()
 	AddTemplateVariable(name string, value any)
 }

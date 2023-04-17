@@ -69,11 +69,15 @@ func (s *Server) CreateDefaultRouter() error {
 				return err
 			}
 
+			c.Context().SetContentType("text/html; charset=utf-8")
 			if site.Page == nil {
-				return fiber.ErrNotFound
+				c.Status(fiber.StatusNotFound)
+				if err := app.ThemeService().RenderNotFound(site, c); err != nil {
+					return err
+				}
+				return nil
 			}
 
-			c.Context().SetContentType("text/html; charset=utf-8")
 			if err := app.ThemeService().RenderPage(site, c); err != nil {
 				return err
 			}

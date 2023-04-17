@@ -48,10 +48,21 @@ func (pc *PageCollection) GetPageByURLAndLanguage(url *url.URL, language fields.
 		if page.Path.Path == uri && page.Language == language {
 			return page
 		}
+		for _, alias := range page.Aliases {
+			if alias == uri && page.Language == language {
+				return page
+			}
+		}
 	}
+
 	for _, page := range pc.pages {
 		if page.Path.Path == uri && page.Language == pc.defaultLanguage {
 			return page
+		}
+		for _, alias := range page.Aliases {
+			if alias == uri && page.Language == pc.defaultLanguage {
+				return page
+			}
 		}
 	}
 	return nil

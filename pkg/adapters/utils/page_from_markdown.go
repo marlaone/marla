@@ -37,7 +37,6 @@ type pageMeta struct {
 	IsDraft      bool           `yaml:"draft"`
 	Slug         string         `yaml:"slug"`
 	Template     string         `yaml:"template"`
-	Path         string         `yaml:"path"`
 	Aliases      string         `yaml:"aliases"`
 	Authors      []string       `yaml:"authors"`
 	Tags         []string       `yaml:"tags"`
@@ -115,6 +114,13 @@ func PageFromMarkdownFile(config *entities.Config, path fields.Path) (*entities.
 		return p, fmt.Errorf("missing title for page, either `title: \"example\"` or a level 1 heading are required: %w", err)
 	}
 
+	if meta.Slug != "" {
+		if !strings.HasPrefix(meta.Slug, "/") {
+			meta.Slug = "/" + meta.Slug
+		}
+		p.Path = &url.URL{Path: meta.Slug, OmitHost: true}
+	}
+
 	createdAt, err := fields.TimeFromString(meta.Date)
 	if err != nil {
 		p.CreatedAt = time.Now()
@@ -150,7 +156,6 @@ func PageFromMarkdownFile(config *entities.Config, path fields.Path) (*entities.
 	p.CreatedAt = createdAt
 	p.LastModifiedAt = &lastModifiedAt
 	p.IsDraft = meta.IsDraft
-	p.Slug = meta.Slug
 	p.Template = templatePath
 	p.Authors = meta.Authors
 	p.Tags = meta.Tags
