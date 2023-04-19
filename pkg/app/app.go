@@ -21,7 +21,6 @@ func getExistingConfigPath(configDirs []string) string {
 }
 
 func StartDefaultApplication() error {
-
 	configAdapter := adapters.NewConfigAdapter()
 	configService := services.NewConfigService(configAdapter)
 
@@ -57,7 +56,7 @@ func StartDefaultApplication() error {
 	)
 
 	if err := app.PageCollectionService().Initialize(config); err != nil {
-		log.Fatal(fmt.Errorf("[App.DefaultApp] initialize page collection: %w", err))
+		return fmt.Errorf("[App.DefaultApp] initialize page collection: %w", err)
 	}
 
 	go app.PageCollectionService().Watch()

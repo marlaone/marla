@@ -21,7 +21,7 @@ type Server struct {
 
 func NewServer(config *entities.Config, app *core.Application) *Server {
 	return &Server{
-		fiberapp: fiber.New(fiber.Config{Prefork: true}),
+		fiberapp: fiber.New(fiber.Config{Prefork: false}),
 		config:   config,
 		app:      app,
 	}
@@ -36,27 +36,6 @@ func (s *Server) CreateDefaultRouter() error {
 		fiberapp.Static("/", filepath.Join(config.ThemePath.String()))
 		fiberapp.Static("/", filepath.Join(config.ThemePath.String(), "static"))
 
-		fiberapp.Get("/", func(c *fiber.Ctx) error {
-			originalUrl := utils.CopyString(c.OriginalURL())
-
-			uri, err := url.Parse(originalUrl)
-			if err != nil {
-				return err
-			}
-
-			site, err := app.SiteService().FetchSite(uri, "en")
-			if err != nil {
-				return err
-			}
-
-			c.Context().SetContentType("text/html; charset=utf-8")
-			if err := app.ThemeService().RenderPage(site, c); err != nil {
-				return err
-			}
-
-			return nil
-		})
-
 		fiberapp.Get("/*", func(c *fiber.Ctx) error {
 			originalUrl := utils.CopyString(c.OriginalURL())
 			uri, err := url.Parse(originalUrl)
@@ -64,6 +43,7 @@ func (s *Server) CreateDefaultRouter() error {
 				return err
 			}
 
+			// TODO: get language from request
 			site, err := app.SiteService().FetchSite(uri, "en")
 			if err != nil {
 				return err

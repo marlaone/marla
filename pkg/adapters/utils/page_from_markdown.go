@@ -14,18 +14,32 @@ import (
 	"github.com/marlaone/marla/pkg/core/fields"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
+	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/parser"
+	"github.com/yuin/goldmark/renderer"
+	"github.com/yuin/goldmark/renderer/html"
 	"github.com/yuin/goldmark/text"
+	"github.com/yuin/goldmark/util"
 	"go.abhg.dev/goldmark/frontmatter"
 )
 
 var md = goldmark.New(
 	goldmark.WithExtensions(
+		extension.Linkify,
 		&frontmatter.Extender{},
 	),
 )
 
-var mdRenderer = goldmark.DefaultRenderer()
+var mdRenderer = renderer.NewRenderer(
+	renderer.WithNodeRenderers(
+		util.Prioritized(
+			html.NewRenderer(
+				html.WithUnsafe(),
+			),
+			1000,
+		),
+	),
+)
 
 var languageFileRegex = regexp.MustCompile(`\.(?P<Lang>[A-Za-z+-]+)$`)
 
