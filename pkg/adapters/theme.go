@@ -47,26 +47,21 @@ func (a *ThemeAdapter) getPongoContext(site *entities.Site) pongo2.Context {
 		"bytes_to_string": func(b []byte) string {
 			return string(b)
 		},
-		"get_path": func(u *url.URL) string {
+		"get_path": func(u *url.URL, baseURL ...string) string {
+			if len(baseURL) > 0 {
+				uri := baseURL[0] + u.Path
+				return strings.ReplaceAll(uri, "//", "/")
+			}
 			return u.String()
 		},
 		"get_subpages": func(page *entities.Page) []*entities.Page {
 			subpages := []*entities.Page{}
 			for _, p := range site.Pages {
-				pagePath := strings.TrimPrefix(p.Path.Path, site.BaseURL)
-				if !strings.HasPrefix(pagePath, "/") {
-					pagePath = "/" + pagePath
-				}
-				parentPagePath := strings.TrimPrefix(page.Path.Path, site.BaseURL)
-				if !strings.HasPrefix(parentPagePath, "/") {
-					parentPagePath = "/" + parentPagePath
-				}
-				if !strings.HasPrefix(pagePath, parentPagePath) {
+				if !strings.HasPrefix(p.Path.Path, page.Path.Path) {
 					continue
 				}
-				pPath := strings.TrimPrefix(pagePath, parentPagePath)
-
-				if pPath != "" && strings.Count(pPath, "/") == 1 && strings.HasPrefix(pPath, "/") {
+				pPath := strings.TrimPrefix(p.Path.Path, page.Path.Path)
+				if pPath != "" && strings.Count(pPath, "/") == 1 {
 					subpages = append(subpages, p)
 				}
 			}
@@ -75,11 +70,7 @@ func (a *ThemeAdapter) getPongoContext(site *entities.Site) pongo2.Context {
 		"get_rootpages": func() []*entities.Page {
 			rootpages := []*entities.Page{}
 			for _, p := range site.Pages {
-				path := strings.TrimPrefix(p.Path.Path, site.BaseURL)
-				if !strings.HasPrefix(path, "/") {
-					path = "/" + path
-				}
-				if strings.Count(path, "/") == 1 {
+				if strings.Count(p.Path.Path, "/") == 1 {
 					rootpages = append(rootpages, p)
 				}
 			}
