@@ -78,3 +78,11 @@ tags: ["home", "index"] # Page Tags
 extra: # Extra Metadata
   foo: "bar"
 ```
+
+## Libraries
+
+- [gofiber/fiber](https://github.com/gofiber/fiber) - used for the web server
+- [yuin/goldmark](https://github.com/yuin/goldmark) - used for parsing markdown files
+  - [abhinav/goldmark-frontmatter](https://github.com/abhinav/goldmark-frontmatter) - used for parsing frontmatter in markdown files
+- [flosch/pongo2](https://github.com/flosch/pongo2) - used for rendering templates
+- [go-yaml/yaml](https://github.com/go-yaml/yaml) - used for parsing yaml files
