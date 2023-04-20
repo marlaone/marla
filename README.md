@@ -16,7 +16,7 @@ Project Marla is a tool to help you build websites. It is a static site generato
 1. Install
 
 ```sh
-go install github.com/marlaone/marla/cmd
+go install github.com/marlaone/marla
 ```
 
 2. Start Website
@@ -56,7 +56,7 @@ default_language: "en" # default language for your website
 │   │   │   │   ├── layout.html # Base Template
 │   │   │   │   ├── index.html # Home Page Template
 │   │   │   │   ├── page.html # About Page Template
-|   |   |   |   ├── 404.html # 404 Page Template
+│   │   │   │   ├── 404.html # 404 Page Template
 │   │   │   ├── static # Static Directory
 ```
 
