@@ -33,7 +33,7 @@ func NewServer(config *entities.Config, app *core.Application, logger ports.Logg
 		fiberapp: fiber.New(fiber.Config{
 			Prefork:      false,
 			ServerHeader: "Marla",
-			AppName:      "Marla",
+			AppName:      "Marla v1.1.0",
 		}),
 		config: config,
 		app:    app,
