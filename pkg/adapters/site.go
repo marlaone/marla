@@ -22,11 +22,12 @@ func NewSiteAdapter(config *entities.Config) *SiteAdapter {
 
 func (sa *SiteAdapter) FetchSite(collection *entities.PageCollection, path *url.URL, userLanguage fields.RequiredString) (*entities.Site, error) {
 	site := &entities.Site{
-		Path:   path,
-		Config: sa.config,
-		Data:   make(map[string]any),
-		Pages:  collection.Pages(),
-		Page:   collection.GetPageByURLAndLanguage(path, userLanguage),
+		Path:    path,
+		Config:  sa.config,
+		Data:    make(map[string]any),
+		Pages:   collection.Pages(),
+		Page:    collection.GetPageByURLAndLanguage(path, userLanguage),
+		BaseURL: sa.config.BaseURL,
 	}
 	return site, nil
 }

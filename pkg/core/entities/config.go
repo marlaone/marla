@@ -9,9 +9,18 @@ type Config struct {
 	HttpHost        fields.RequiredString `yaml:"http_host"`
 	HttpPort        fields.HttpPort       `yaml:"http_port"`
 	DefaultLangauge fields.RequiredString `yaml:"default_language"`
+	BaseURL         string                `yaml:"base_url"`
 }
 
-func NewConfig(contentPath fields.Path, dataPath fields.Path, themePath fields.Path, httpHost fields.RequiredString, httpPort fields.HttpPort, defaultLanguage fields.RequiredString) *Config {
+func NewConfig(
+	contentPath fields.Path,
+	dataPath fields.Path,
+	themePath fields.Path,
+	httpHost fields.RequiredString,
+	httpPort fields.HttpPort,
+	defaultLanguage fields.RequiredString,
+	baseURL string,
+) *Config {
 	return &Config{
 		ContentPath:     contentPath,
 		DataPath:        dataPath,
@@ -19,5 +28,6 @@ func NewConfig(contentPath fields.Path, dataPath fields.Path, themePath fields.P
 		HttpHost:        httpHost,
 		HttpPort:        httpPort,
 		DefaultLangauge: defaultLanguage,
+		BaseURL:         baseURL,
 	}
 }

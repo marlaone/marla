@@ -7,6 +7,7 @@ import (
 )
 
 type Site struct {
+	BaseURL  string
 	Path     *url.URL
 	Config   *Config
 	Pages    []*Page
