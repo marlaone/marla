@@ -1,11 +1,7 @@
 package main
 
-import (
-	"github.com/marlaone/marla/pkg/app"
-)
+import "github.com/marlaone/marla/cmd"
 
 func main() {
-	if err := app.StartDefaultApplication(); err != nil {
-		panic(err)
-	}
+	cmd.Execute()
 }

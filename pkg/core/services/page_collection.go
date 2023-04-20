@@ -10,12 +10,14 @@ import (
 // PageCollectionService is the service for the page collection.
 type PageCollectionService struct {
 	adapter ports.PageCollectionPort
+	logger  ports.LoggerPort
 }
 
 // NewPageCollectionService returns a new PageCollectionService.
-func NewPageCollectionService(adapter ports.PageCollectionPort) *PageCollectionService {
+func NewPageCollectionService(adapter ports.PageCollectionPort, logger ports.LoggerPort) *PageCollectionService {
 	return &PageCollectionService{
 		adapter: adapter,
+		logger:  logger,
 	}
 }
 
@@ -26,6 +28,7 @@ func (s *PageCollectionService) GetPageCollection() *entities.PageCollection {
 
 // Watch watches the page collection for changes.
 func (s *PageCollectionService) Watch() error {
+	s.logger.Debug("watching page collection for changes")
 	err := s.adapter.WatchPageCollection()
 	if err != nil {
 		return fmt.Errorf("[PageCollectionService.WatchPageChanges] %w", err)
@@ -35,6 +38,7 @@ func (s *PageCollectionService) Watch() error {
 
 // Initialize initializes the page collection.
 func (s *PageCollectionService) Initialize(config *entities.Config) error {
+	s.logger.Debug("initializing page collection")
 	err := s.adapter.InitializePageCollection(config)
 	if err != nil {
 		return fmt.Errorf("[PageCollectionService.InitializePageCollection] %w", err)

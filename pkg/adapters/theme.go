@@ -17,6 +17,7 @@ import (
 // ThemeAdapter is the adapter for the theme port.
 // It is used to render the pages.
 type ThemeAdapter struct {
+	logger          ports.LoggerPort
 	mutex           *sync.Mutex
 	config          *entities.Config
 	globalVariables map[string]any
@@ -36,8 +37,9 @@ func init() {
 }
 
 // NewThemeAdapter returns a new ThemeAdapter
-func NewThemeAdapter(config *entities.Config) *ThemeAdapter {
+func NewThemeAdapter(config *entities.Config, logger ports.LoggerPort) *ThemeAdapter {
 	return &ThemeAdapter{
+		logger:          logger,
 		mutex:           &sync.Mutex{},
 		config:          config,
 		globalVariables: make(map[string]any),
@@ -147,6 +149,8 @@ func (a *ThemeAdapter) NotFoundRenderer() ports.ThemeRenderer {
 // WatchTemplates checks for changes in the templates and reloads them if necessary.
 func (a *ThemeAdapter) WatchTemplates() {
 
+	a.logger.Debug("[ThemeAdapter.WatchTemplates] Watching templates...")
+
 	ticker := time.NewTicker(5 * time.Second)
 	for {
 		select {
@@ -155,6 +159,7 @@ func (a *ThemeAdapter) WatchTemplates() {
 			for templatePath, lastModTime := range a.knownTemplates {
 				if info, err := os.Stat(templatePath); err == nil {
 					if info.ModTime().After(lastModTime) {
+						a.logger.Debug("[ThemeAdapter.WatchTemplates] Reloading template", "template", templatePath)
 						pongo2.DefaultSet.CleanCache(templatePath)
 						a.knownTemplates[templatePath] = info.ModTime()
 					}
@@ -169,6 +174,7 @@ func (a *ThemeAdapter) WatchTemplates() {
 func (a *ThemeAdapter) touchTemplate(templatePath string) {
 	a.mutex.Lock()
 	if _, ok := a.knownTemplates[templatePath]; !ok {
+		a.logger.Debug("[ThemeAdapter.touchTemplate] Adding template to known templates", "template", templatePath)
 		if info, err := os.Stat(templatePath); err == nil {
 			a.knownTemplates[templatePath] = info.ModTime()
 		}

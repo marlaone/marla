@@ -14,6 +14,7 @@ import (
 
 // PageCollectionAdapter implements the PageCollectionPort interface.
 type PageCollectionAdapter struct {
+	logger     ports.LoggerPort
 	collection *entities.PageCollection
 	config     *entities.Config
 }
@@ -21,8 +22,9 @@ type PageCollectionAdapter struct {
 var _ ports.PageCollectionPort = &PageCollectionAdapter{}
 
 // NewPageCollectionAdapter returns a new PageCollectionAdapter.
-func NewPageCollectionAdapter() *PageCollectionAdapter {
+func NewPageCollectionAdapter(logger ports.LoggerPort) *PageCollectionAdapter {
 	return &PageCollectionAdapter{
+		logger:     logger,
 		collection: entities.NewPageCollection(),
 	}
 }
@@ -35,6 +37,8 @@ func NewPageCollectionAdapter() *PageCollectionAdapter {
 func (a *PageCollectionAdapter) InitializePageCollection(config *entities.Config) error {
 	a.config = config
 	a.collection.SetDefaultLanguage(config.DefaultLangauge)
+
+	a.logger.Debug("[PageCollectionAdapter.InitializePageCollection] looking for page files", "path", config.ContentPath.String())
 	err := filepath.Walk(config.ContentPath.String(), func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -45,6 +49,7 @@ func (a *PageCollectionAdapter) InitializePageCollection(config *entities.Config
 		}
 
 		if filepath.Ext(path) == ".md" {
+			a.logger.Debug("[PageCollectionAdapter.InitializePageCollection] found page file", "path", path)
 			page, err := utils.PageFromMarkdownFile(config, fields.Path(path))
 			if err != nil {
 				return fmt.Errorf("could not create page from markdown file: %w", err)
@@ -68,12 +73,14 @@ func (a *PageCollectionAdapter) WatchPageCollection() error {
 	// map of file paths and their last modified time
 	filesModified := map[string]time.Time{}
 
+	a.logger.Debug("[PageCollectionAdapter.WatchPageCollection] watching page collection for changes", "path", a.config.ContentPath.String())
 	// get the last modified time for each page file
 	for _, p := range a.collection.Pages() {
 		info, err := os.Stat(p.ContentPath.String())
 		if err != nil {
 			return fmt.Errorf("could not get file info for %s: %w", p.ContentPath.String(), err)
 		}
+		a.logger.Debug("[PageCollectionAdapter.WatchPageCollection] watching file for changes", "path", p.ContentPath.String(), "last modified", info.ModTime().String())
 		filesModified[p.ContentPath.String()] = info.ModTime()
 	}
 
@@ -90,15 +97,18 @@ func (a *PageCollectionAdapter) WatchPageCollection() error {
 					info, err := os.Stat(path)
 					// if the file does not exist anymore, remove it from the collection
 					if err != nil {
+						a.logger.Debug("[PageCollectionAdapter.WatchPageCollection] file has been removed", "path", path)
 						a.collection.RemovePageByPath(fields.Path(path))
 						delete(filesModified, path)
 						continue
 					}
 					// if the file has been modified, update the page in the collection
 					if info.ModTime() != modified {
+						a.logger.Debug("[PageCollectionAdapter.WatchPageCollection] file has been modified", "path", path, "last modified", modified.String(), "new last modified", info.ModTime().String())
 						page, err := utils.PageFromMarkdownFile(a.config, fields.Path(path))
 						if err != nil {
-							errC <- fmt.Errorf("could not create page from markdown file: %w", err)
+							a.logger.Error("[PageCollectionAdapter.WatchPageCollection] could not create page from markdown file", "path", path, "error", err)
+							continue
 						}
 						a.collection.UpdatePage(fields.Path(path), page)
 						filesModified[path] = info.ModTime()
@@ -119,6 +129,7 @@ func (a *PageCollectionAdapter) WatchPageCollection() error {
 						if _, ok := filesModified[path]; !ok {
 							page, err := utils.PageFromMarkdownFile(a.config, fields.Path(path))
 							if err == nil {
+								a.logger.Debug("[PageCollectionAdapter.WatchPageCollection] found new page file", "path", path)
 								a.collection.AddPage(page)
 							}
 							filesModified[path] = info.ModTime()

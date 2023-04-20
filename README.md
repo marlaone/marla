@@ -27,7 +27,7 @@ Navigate to the root of your website and run the following command:
 marla
 ```
 
-This will start a web server on port 1818. You can now view your website by navigating to http://localhost:1818.
+This will start a web server on port 1818. You can now view your website by navigating to <http://localhost:1818>.
 
 The application searches for a `config.yml` file in the root of your website, inside a `./site` directory, or inside a `~/.marla/` directory. If it finds a `config.yml` file, it will use that file. If it does not find a `config.yml` file, it will use the default configuration.
 
@@ -86,3 +86,6 @@ extra: # Extra Metadata
   - [abhinav/goldmark-frontmatter](https://github.com/abhinav/goldmark-frontmatter) - used for parsing frontmatter in markdown files
 - [flosch/pongo2](https://github.com/flosch/pongo2) - used for rendering templates
 - [go-yaml/yaml](https://github.com/go-yaml/yaml) - used for parsing yaml files
+- [spf13/cobra-cli](https://github.com/spf13/cobra-cli) - used for the command line interface
+- [spf13/viper](https://github.com/spf13/viper) - used for configuration
+- [uber-go/zap](https://github.com/uber-go/zap) - used for logging
