@@ -39,6 +39,7 @@ theme_path: "./site/themes/your_theme" # path to your theme
 http_host: "localhost" # host to listen on
 http_port: 1818 # port to listen on
 default_language: "en" # default language for your website
+base_url: "/some_sub_path" # base url for your website
 ```
 
 ## Website Directory Structure

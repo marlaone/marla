@@ -8,6 +8,9 @@ import (
 )
 
 type Page struct {
+	Parent   *Page
+	Children []*Page
+
 	Title          fields.RequiredString
 	Path           *url.URL
 	ContentPath    fields.Path

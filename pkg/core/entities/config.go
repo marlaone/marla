@@ -2,6 +2,7 @@ package entities
 
 import "github.com/marlaone/marla/pkg/core/fields"
 
+// Config represents the configuration of the site.
 type Config struct {
 	ContentPath     fields.Path           `yaml:"content_path"`
 	DataPath        fields.Path           `yaml:"data_path"`
@@ -10,24 +11,4 @@ type Config struct {
 	HttpPort        fields.HttpPort       `yaml:"http_port"`
 	DefaultLangauge fields.RequiredString `yaml:"default_language"`
 	BaseURL         string                `yaml:"base_url"`
-}
-
-func NewConfig(
-	contentPath fields.Path,
-	dataPath fields.Path,
-	themePath fields.Path,
-	httpHost fields.RequiredString,
-	httpPort fields.HttpPort,
-	defaultLanguage fields.RequiredString,
-	baseURL string,
-) *Config {
-	return &Config{
-		ContentPath:     contentPath,
-		DataPath:        dataPath,
-		ThemePath:       themePath,
-		HttpHost:        httpHost,
-		HttpPort:        httpPort,
-		DefaultLangauge: defaultLanguage,
-		BaseURL:         baseURL,
-	}
 }

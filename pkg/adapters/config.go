@@ -9,15 +9,18 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// ConfigAdapter implements the ConfigPort interface.
 type ConfigAdapter struct {
 }
 
 var _ ports.ConfigPort = &ConfigAdapter{}
 
+// NewConfigAdapter returns a new ConfigAdapter.
 func NewConfigAdapter() *ConfigAdapter {
 	return &ConfigAdapter{}
 }
 
+// LoadConfig loads the config from a file.
 func (a *ConfigAdapter) LoadConfig(filename string) (*entities.Config, error) {
 
 	configFile, err := os.ReadFile(filename)

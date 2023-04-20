@@ -11,6 +11,7 @@ import (
 	"github.com/marlaone/marla/pkg/server"
 )
 
+// getExistingConfigPath returns the first existing config path.
 func getExistingConfigPath(configDirs []string) string {
 	for _, dir := range configDirs {
 		if _, err := os.Stat(dir); err == nil {
@@ -20,6 +21,10 @@ func getExistingConfigPath(configDirs []string) string {
 	return ""
 }
 
+// StartDefaultApplication starts the default application.
+// It returns an error if the config could not be loaded.
+// It returns an error if the page collection could not be initialized.
+// It returns an error if the server could not be started.
 func StartDefaultApplication() error {
 	configAdapter := adapters.NewConfigAdapter()
 	configService := services.NewConfigService(configAdapter)

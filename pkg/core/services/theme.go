@@ -8,11 +8,13 @@ import (
 	"github.com/marlaone/marla/pkg/core/ports"
 )
 
+// ThemeService is the service for the theme.
 type ThemeService struct {
 	adapter          ports.ThemePort
 	templateRenderer ports.ThemeRenderer
 }
 
+// NewThemeService returns a new ThemeService.
 func NewThemeService(adapter ports.ThemePort) *ThemeService {
 	return &ThemeService{
 		adapter:          adapter,
@@ -20,6 +22,7 @@ func NewThemeService(adapter ports.ThemePort) *ThemeService {
 	}
 }
 
+// RenderPage renders a page with the site data.
 func (s *ThemeService) RenderPage(site *entities.Site, w io.Writer) error {
 	err := s.templateRenderer(site, w)
 	if err != nil {
@@ -28,6 +31,7 @@ func (s *ThemeService) RenderPage(site *entities.Site, w io.Writer) error {
 	return nil
 }
 
+// RenderNotFound renders the 404 page.
 func (s *ThemeService) RenderNotFound(site *entities.Site, w io.Writer) error {
 	err := s.adapter.NotFoundRenderer()(site, w)
 	if err != nil {
@@ -36,6 +40,7 @@ func (s *ThemeService) RenderNotFound(site *entities.Site, w io.Writer) error {
 	return nil
 }
 
+// WatchTemplates watches the theme templates for changes.
 func (a *ThemeService) WatchTemplates() {
 	a.adapter.WatchTemplates()
 }
