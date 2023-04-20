@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/url"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"time"
 
@@ -41,8 +40,6 @@ var mdRenderer = renderer.NewRenderer(
 	),
 )
 
-var languageFileRegex = regexp.MustCompile(`\.(?P<Lang>[A-Za-z+-]+)$`)
-
 type pageMeta struct {
 	Title        string         `yaml:"title"`
 	Description  string         `yaml:"description"`
@@ -62,36 +59,17 @@ func PageFromMarkdownFile(config *entities.Config, path fields.Path) (*entities.
 	p.ContentPath = path
 	p.Language = config.DefaultLangauge
 
-	uriPath, err := filepath.Rel(config.ContentPath.String(), path.String())
+	relUri, err := filepath.Rel(config.ContentPath.String(), path.String())
 	if err != nil {
 		return p, fmt.Errorf("could not get relative path: %w", err)
 	}
-	if !strings.HasPrefix(uriPath, "/") {
-		uriPath = "/" + uriPath
-	}
-	uriPath = strings.TrimSuffix(uriPath, ".md")
-	uriPath = strings.TrimSuffix(uriPath, "/index")
+	pageUri, pageLanguage := GetPageURL(config.BaseURL, relUri)
 
-	if uriPath == "" {
-		uriPath = "/"
+	if pageLanguage != "" {
+		p.Language = fields.MustRequiredStringFromString(pageLanguage)
 	}
 
-	if config.BaseURL != "" {
-		if !strings.HasSuffix(config.BaseURL, "/") {
-			config.BaseURL += "/"
-		}
-		uriPath = strings.TrimPrefix(uriPath, "/")
-		uriPath = config.BaseURL + uriPath
-	}
-
-	langMatches := languageFileRegex.FindStringSubmatch(uriPath)
-
-	if len(langMatches) > 1 {
-		p.Language = fields.MustRequiredStringFromString(langMatches[1])
-		uriPath = strings.TrimSuffix(uriPath, "."+langMatches[1])
-	}
-
-	p.Path = &url.URL{Path: uriPath, OmitHost: true}
+	p.Path = pageUri
 
 	f, err := p.ContentPath.File()
 	if err != nil {
