@@ -29,10 +29,14 @@ type Server struct {
 // The server is created with the given config and application.
 func NewServer(config *entities.Config, app *core.Application, logger ports.LoggerPort) *Server {
 	return &Server{
-		logger:   logger,
-		fiberapp: fiber.New(fiber.Config{Prefork: false}),
-		config:   config,
-		app:      app,
+		logger: logger,
+		fiberapp: fiber.New(fiber.Config{
+			Prefork:      false,
+			ServerHeader: "Marla",
+			AppName:      "Marla",
+		}),
+		config: config,
+		app:    app,
 	}
 }
 
